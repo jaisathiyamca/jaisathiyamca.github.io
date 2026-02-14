@@ -1,0 +1,14 @@
+# Portfolio Configuration
+
+# Site information
+site: 
+  title: "Jaisathiyam's Portfolio"
+  description: "Java Developer & Architect"
+  url: "https://jaisathiyamca.github.io"
+
+# Build settings
+build:
+  permalink: pretty
+
+# Google Analytics
+google_analytics: "UA-XXXXX-Y"
