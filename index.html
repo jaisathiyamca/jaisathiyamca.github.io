@@ -1,279 +1,1108 @@
----
-layout: neo-default
-title: Jai Sathiya | Senior Java Developer & Architect
----
+<!DOCTYPE html>
+<html lang="en">
 
-<style>
-/* Compact layout overrides to reduce vertical spacing and font sizes */
-.container-fluid{padding-left:12px;padding-right:12px;}
-.hero-section{padding:12px 0;}
-.hero-wrapper{display:flex;flex-wrap:wrap;align-items:center;gap:12px;}
-.hero-left{flex:1 1 60%;}
-.hero-right{flex:1 1 35%;display:flex;justify-content:center;}
-.badge-primary{font-size:0.85rem;padding:4px 8px;}
-.hero-title{font-size:1.6rem;margin:6px 0 4px;}
-.hero-subtitle{font-size:1rem;margin:0 0 6px;}
-.hero-description{font-size:0.92rem;line-height:1.15;margin:0 0 8px;max-height:3.7em;overflow:hidden;}
-.profile-image{width:90px;height:90px;border-radius:8px;}
-/* restore floating icons (small, animated) and keep them unobtrusive */
-.floating-icon{position:absolute;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:1rem;width:44px;height:44px;border-radius:8px;border:2px solid rgba(0,0,0,0.06);animation:float 3s ease-in-out infinite;}
-.icon-1{top:6px;left:-18px}
-.icon-2{top:40%;right:-18px}
-.icon-3{bottom:36px;left:12px}
-.icon-4{bottom:72px;right:12px}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.section-title{font-size:1.05rem;margin-bottom:6px;}
-.section-subtitle{font-size:0.9rem;margin-bottom:8px;}
-.tech-grid .tech-card{padding:8px;}
-.tech-grid .tech-card h3{font-size:0.95rem;margin:6px 0;}
-.expertise-grid .expertise-card{padding:8px;}
-.expertise-grid li{font-size:0.86rem;margin:2px 0;}
-.project-content h3{font-size:1rem;margin:4px 0;}
-.project-content p{font-size:0.9rem;margin:4px 0;}
-.stats-grid{gap:8px;}
-.stat-number{font-size:1.2rem;}
-.cta-final-section{padding:12px 0;}
-.btn-large{padding:8px 12px;font-size:0.95rem;}
-@media (max-width:768px){ .hero-left,.hero-right{flex:1 1 100%} .profile-image{width:80px;height:80px} }
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sathiyaraj V | Senior Java Developer & Software Architect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ==========================================
+   ULTRA-COMPACT PROFESSIONAL SINGLE-PAGE PORTFOLIO
+   Everything fits on one screen
+   ========================================== */
 
-<!-- HERO SECTION -->
-<section class="hero-section">
-    <div class="container-fluid">
-        <div class="hero-wrapper">
-            <!-- LEFT SIDE TEXT -->
-            <div class="hero-left">
-                <div class="badge-primary">💼 Software Architect &amp; Engineering Lead</div>
-<h1 class="hero-title">
-    Hi, I'm <span class="accent-orange">Sathiyaraj</span>
-</h1>
-<p class="hero-subtitle">Senior Java Architect · Engineering Lead</p>
-<p class="hero-description">
-    13+ years delivering resilient, high-performance enterprise systems with Java &amp; Spring Boot.
-    Specialized in microservices, cloud-native (GCP) architectures, distributed systems, observability,
-    and CI/CD. Experienced in leading cross-functional teams, mentoring engineers, and driving
-    architecture decisions to scale secure & performance driven production systems.
-</p>
-                <div class="cta-buttons">
-                    <a href="/assets/Sathiyaraj_Resume.pdf" class="btn btn-bright-yellow">📥 Download CV</a>
-                    <a href="/posts" class="btn btn-bright-blue">📝 View Posts</a>
-                </div>
-            </div>̦
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-            <!-- RIGHT SIDE PROFILE IMAGE -->
-            <div class="hero-right">
-                <div class="profile-image-wrapper">
-                    <img src="/assets/images/profile.png" alt="Sathiya" class="profile-image">
-                </div>
-                <!-- FLOATING ICONS -->
-                <div class="floating-icon icon-1">💻</div>
-                <div class="floating-icon icon-2">⚙️</div>
-                <div class="floating-icon icon-3">🚀</div>
-                <div class="floating-icon icon-4">🔧</div>
-            </div>
-        </div>
-    </div>
-</section>
+        :root {
+            --primary: #FF6B35;
+            --secondary: #FFD700;
+            --accent: #00D4BB;
+            --dark: #0A0E27;
+            --light: #F5F7FA;
+        }
 
-<!-- TECH & TOOLS SECTION -->
-<section class="tech-section">
-    <div class="container-fluid">
-        <h2 class="section-title">Tech & Tools</h2>
-        <p class="section-subtitle">Technologies I work with</p>
-        
-        <div class="tech-grid">
-            <div class="tech-card card-orange">
-                <span class="tech-icon">☕</span>
-                <h3>Java</h3>
-                <p>Core expertise, 13+ years</p>
-            </div>
-            <div class="tech-card card-yellow">
-                <span class="tech-icon">🍃</span>
-                <h3>Spring Boot</h3>
-                <p>Microservices & APIs</p>
-            </div>
-            <div class="tech-card card-purple">
-                <span class="tech-icon">🏗️</span>
-                <h3>Microservices</h3>
-                <p>Architecture patterns</p>
-            </div>
-            <div class="tech-card card-pink">
-                <span class="tech-icon">🐳</span>
-                <h3>Docker</h3>
-                <p>Containerization</p>
-            </div>
-            <div class="tech-card card-pink">
-                <span class="tech-icon">☸️</span>
-                <h3>Kubernetes</h3>
-                <p>Orchestration & scaling</p>
-            </div>
-            <div class="tech-card card-blue">
-                <span class="tech-icon">🔗</span>
-                <h3>Git & GitHub</h3>
-                <p>Version control</p>
-            </div>
-            <div class="tech-card card-yellow">
-                <span class="tech-icon">📊</span>
-                <h3>GCP</h3>
-                <p>Cloud infrastructure</p>
-            </div>
-            <div class="tech-card card-teal">
-                <span class="tech-icon">🗄️</span>
-                <h3>PostgreSQL</h3>
-                <p>Database design</p>
-            </div>
-            <div class="tech-card card-teal">
-                <span class="tech-icon">⚡</span>
-                <h3>Redis</h3>
-                <p>Caching & performance</p>
-            </div>
-        </div>
-    </div>
-</section>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-<!-- EXPERIENCE & SKILLS SECTION -->
-<section class="experience-section">
-    <div class="container-fluid">
-        <h2 class="section-title">Core Expertise</h2>
-        
-        <div class="expertise-grid">
-            <div class="expertise-card card-bright-orange">
-                <h3>🔤 Languages</h3>
-                <ul>
-                    <li>Java (Expert)</li>
-                    <li>SQL</li>
-                    <li>Python</li>
-                </ul>
-            </div>
-            <div class="expertise-card card-bright-yellow">
-                <h3>🛠️ Frameworks</h3>
-                <ul>
-                    <li>Spring Boot</li>
-                    <li>Spring Cloud</li>
-                    <li>Hibernate/JPA</li>
-                    <li>Angular</li>
-                </ul>
-            </div>
-            <div class="expertise-card card-bright-blue">
-                <h3>🏗️ Architecture</h3>
-                <ul>
-                    <li>Microservices</li>
-                    <li>System Design</li>
-                    <li>Event-Driven</li>
-                </ul>
-            </div>
-            <div class="expertise-card card-bright-teal">
-                <h3>☁️ Cloud & DevOps</h3>
-                <ul>
-                    <li>GCP</li>
-                    <li>Docker & K8s</li>
-                    <li>CI/CD</li>
-                </ul>
-            </div>
-            <div class="expertise-card card-bright-pink">
-                <h3>🗄️ Databases</h3>
-                <ul>
-                    <li>PostgreSQL</li>
-                    <li>MongoDB</li>
-                    <li>Redis</li>
-                </ul>
-            </div>
-            <div class="expertise-card card-bright-purple">
-                <h3>👥 Leadership</h3>
-                <ul>
-                    <li>Team Management</li>
-                    <li>Mentoring</li>
-                    <li>Architecture Review</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
 
-<!-- PROJECTS & WORK SECTION -->
-<section class="projects-section">
-    <div class="container-fluid">
-        <h2 class="section-title">Projects & Work Results</h2>
-        <p class="section-subtitle">Projects that showcase my expertise</p>
-        
-        <div class="projects-grid">
-            <div class="project-card card-orange-border">
-                <div class="project-image project-image-1"></div>
-                <div class="project-content">
-                    <h3>OneVAL</h3>
-                    <p>Architected and deployed microservices platform with best practices and architecte </p>
-                    <div class="project-icons">
-                        <span class="icon-box">Java</span>
-                        <span class="icon-box">K8s</span>
-                        <span class="icon-box">AWS</span>
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ==========================================
+   HERO SECTION - Compact
+   ========================================== */
+
+        .hero-section {
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .hero-wrapper {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 25px;
+            align-items: center;
+        }
+
+        /* Left Content Card */
+        .hero-left {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .badge-primary {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF6B35, #FF8C42, #FFD700);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.65rem;
+            margin-bottom: 8px;
+            box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+        }
+
+        .hero-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #FF6B35;
+            margin-bottom: 6px;
+        }
+
+        .hero-description {
+            font-size: 0.7rem;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 7px 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-bright-yellow {
+            background: linear-gradient(135deg, #FFD700, #FF8C42);
+            color: #0A0E27;
+        }
+
+        .btn-bright-blue {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        /* ==========================================
+   PROFESSIONAL PROFILE DESIGN
+   ========================================== */
+
+        .hero-right {
+            position: relative;
+            height: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        .profile-image-wrapper {
+            position: relative;
+            width: 260px;
+            height: 310px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-image-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .profile-image-wrapper::after {
+            content: '';
+            position: absolute;
+            width: calc(100% - 25px);
+            height: calc(100% - 25px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #667eea, #764ba2, #FF6B35) 1;
+            border-radius: 12px;
+            z-index: 1;
+        }
+
+        .profile-image {
+            width: 230px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 12px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            filter: brightness(1.05) contrast(1.05) saturate(1.1);
+        }
+
+        .profile-image:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Corner Accents */
+        .corner-accent {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border: 2px solid;
+            z-index: 3;
+        }
+
+        .corner-accent-1 {
+            top: -7px;
+            left: -7px;
+            border-right: none;
+            border-bottom: none;
+            border-color: #667eea;
+            border-radius: 6px 0 0 0;
+        }
+
+        .corner-accent-2 {
+            top: -7px;
+            right: -7px;
+            border-left: none;
+            border-bottom: none;
+            border-color: #764ba2;
+            border-radius: 0 6px 0 0;
+        }
+
+        .corner-accent-3 {
+            bottom: -7px;
+            left: -7px;
+            border-right: none;
+            border-top: none;
+            border-color: #FF6B35;
+            border-radius: 0 0 0 6px;
+        }
+
+        .corner-accent-4 {
+            bottom: -7px;
+            right: -7px;
+            border-left: none;
+            border-top: none;
+            border-color: #FFD700;
+            border-radius: 0 0 6px 0;
+        }
+
+        /* Social Links */
+        .social-links {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 4;
+        }
+
+        .social-link {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .social-link.linkedin {
+            color: #0077B5;
+        }
+
+        .social-link.github {
+            color: #333;
+        }
+
+        .social-link.linkedin:hover {
+            background: linear-gradient(135deg, #0077B5, #00A0DC);
+            color: white;
+        }
+
+        .social-link.github:hover {
+            background: linear-gradient(135deg, #333, #555);
+            color: white;
+        }
+
+        /* Floating Icons - Fully Visible */
+        .floating-icon {
+            position: absolute;
+            font-size: 1.4rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .floating-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .icon-1 {
+            top: 12px;
+            left: -58px;
+            color: #667eea;
+        }
+
+        .icon-2 {
+            top: 45%;
+            right: -58px;
+            color: #00D4BB;
+        }
+
+        .icon-3 {
+            bottom: 70px;
+            left: -42px;
+            color: #FF6B35;
+        }
+
+        .icon-4 {
+            bottom: 95px;
+            right: -42px;
+            color: #FFD700;
+        }
+
+        /* ==========================================
+   SECTIONS - Ultra Compact
+   ========================================== */
+
+        .tech-section,
+        .experience-section,
+        .projects-section,
+        .blog-section,
+        .stats-section {
+            padding: 12px 0;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+        }
+
+        /* Tech Grid - Compact */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 7px;
+            margin-bottom: 8px;
+        }
+
+        .tech-card {
+            padding: 10px 6px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .tech-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .tech-card h3 {
+            font-size: 0.68rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: var(--dark);
+        }
+
+        .tech-card p {
+            font-size: 0.58rem;
+            color: #666;
+        }
+
+        /* Expertise Grid - Compact */
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .expertise-card {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .expertise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #FF6B35, #FFD700, #00D4BB);
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .expertise-card h3 {
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--dark);
+        }
+
+        .expertise-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .expertise-card li {
+            padding: 3px 0;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.62rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Projects Grid - Compact */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+        }
+
+        .project-image-1 {
+            background: linear-gradient(135deg, #FF6B35, #FF8C42);
+        }
+
+        .project-image-2 {
+            background: linear-gradient(135deg, #00B8A9, #00D4BB);
+        }
+
+        .project-image-3 {
+            background: linear-gradient(135deg, #FFD700, #FFED4E);
+        }
+
+        .project-content {
+            padding: 10px;
+        }
+
+        .project-content h3 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .project-content p {
+            color: #666;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            font-size: 0.62rem;
+        }
+
+        .project-icons {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .icon-box {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.58rem;
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .project-link {
+            color: #FF6B35;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.62rem;
+        }
+
+        /* Blog Section - Compact */
+        .blog-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .blog-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-date {
+            color: #FF6B35;
+            font-weight: 700;
+            font-size: 0.62rem;
+            margin-bottom: 4px;
+        }
+
+        .blog-card h3 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .blog-card p {
+            color: #666;
+            line-height: 1.3;
+            margin-bottom: 6px;
+            font-size: 0.62rem;
+        }
+
+        .blog-tags {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .blog-tag {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.58rem;
+            font-weight: 600;
+            color: #FF6B35;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .read-more {
+            color: #667eea;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.62rem;
+        }
+
+        /* Stats Grid - Compact */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .stat-box {
+            padding: 16px 10px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* CTA Section - Compact */
+        .cta-final-section {
+            padding: 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-box {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-box h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-box p {
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            color: #666;
+        }
+
+        .cta-buttons-final {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 9px 20px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-right {
+                height: 320px;
+            }
+
+            .profile-image-wrapper {
+                width: 240px;
+                height: 300px;
+            }
+
+            .profile-image {
+                width: 210px;
+                height: 270px;
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .expertise-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tech-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .expertise-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="container-fluid">
+            <div class="hero-wrapper">
+                <div class="hero-left">
+                    <div class="badge-primary">💼 Software Architect & Engineering Lead</div>
+                    <h1 class="hero-title">Hi, I'm Sathiyaraj</h1>
+                    <p class="hero-subtitle">Senior Java Architect · Engineering Lead</p>
+                    <p class="hero-description">
+                        13+ years delivering resilient, high-performance enterprise systems with Java & Spring Boot.
+                        Specialized in microservices, cloud-native (GCP) architectures, distributed systems,
+                        observability,
+                        and CI/CD. Experienced in leading cross-functional teams, mentoring engineers, and driving
+                        architecture decisions to scale secure & performance-driven production systems.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="/assets/Sathiyaraj_Resume.pdf" class="btn btn-bright-yellow" download>📥 Download
+                            CV</a>
+                        <a href="#blog" class="btn btn-bright-blue">📝 View Posts</a>
                     </div>
-                    <a href="#" class="project-link">See Full Project →</a>
                 </div>
-            </div>
-            <div class="project-card card-teal-border">
-                <div class="project-image project-image-2"></div>
-                <div class="project-content">
-                    <h3>Real-time Analytics</h3>
-                    <p>Built event-driven system processing 1M+ events/minute with sub-second latency</p>
-                    <div class="project-icons">
-                        <span class="icon-box">Kafka</span>
-                        <span class="icon-box">Spark</span>
-                        <span class="icon-box">ES</span>
-                    </div>
-                    <a href="#" class="project-link">See Full Project →</a>
-                </div>
-            </div>
-            <div class="project-card card-yellow-border">
-                <div class="project-image project-image-3"></div>
-                <div class="project-content">
-                    <h3>Payment System</h3>
-                    <p>Designed fault-tolerant payment processing system handling millions of transactions</p>
-                    <div class="project-icons">
-                        <span class="icon-box">Spring</span>
-                        <span class="icon-box">Security</span>
-                        <span class="icon-box">PCI</span>
-                    </div>
-                    <a href="#" class="project-link">See Full Project →</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- STATS SECTION -->
-<section class="stats-section">
-    <div class="container-fluid">
-        <div class="stats-grid">
-            <div class="stat-box card-orange">
-                <div class="stat-number">13+</div>
-                <div class="stat-label">Years Experience</div>
-            </div>
-            <div class="stat-box card-teal">
-                <div class="stat-number">50+</div>
-                <div class="stat-label">Projects Delivered</div>
-            </div>
-            <div class="stat-box card-yellow">
-                <div class="stat-number">100+</div>
-                <div class="stat-label">Developers Mentored</div>
-            </div>
-            <div class="stat-box card-pink">
-                <div class="stat-number">99.9%</div>
-                <div class="stat-label">Uptime Record</div>
-            </div>
-        </div>
-    </div>
-</section>
+                <div class="hero-right">
+                    <div class="profile-image-wrapper">
+                        <img src="assets/images/profile.png" alt="Sathiyaraj V" class="profile-image">
 
-<!-- CTA SECTION -->
-<section class="cta-final-section">
-    <div class="container-fluid">
-        <div class="cta-box">
-            <h2>Ready to Collaborate?</h2>
-            <p>Let's discuss architecture, system design, or your next big project</p>
-            <div class="cta-buttons-final">
-                <a href="/contact" class="btn btn-bright-blue btn-large">Get In Touch</a>
-                <a href="/posts" class="btn btn-bright-yellow btn-large">Read My Posts</a>
+                        <!-- Professional Corner Accents -->
+                        <div class="corner-accent corner-accent-1"></div>
+                        <div class="corner-accent corner-accent-2"></div>
+                        <div class="corner-accent corner-accent-3"></div>
+                        <div class="corner-accent corner-accent-4"></div>
+
+                        <!-- Social Links -->
+                        <div class="social-links">
+                            <a href="https://www.linkedin.com/in/sathiyaraj-venkatachalapathy-706569188/"
+                                target="_blank" rel="noopener noreferrer" class="social-link linkedin"
+                                title="LinkedIn Profile">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                                </svg>
+                            </a>
+                            <a href="https://github.com/jaisathiyamca" target="_blank" rel="noopener noreferrer"
+                                class="social-link github" title="GitHub Profile">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Floating Tech Icons - Fully Visible -->
+                    <div class="floating-icon icon-1">💻</div>
+                    <div class="floating-icon icon-2">⚙️</div>
+                    <div class="floating-icon icon-3">🚀</div>
+                    <div class="floating-icon icon-4">🔧</div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+    <!-- TECH & TOOLS SECTION -->
+    <section class="tech-section">
+        <div class="container-fluid">
+            <h2 class="section-title">Tech & Tools</h2>
+            <p class="section-subtitle">Technologies I work with to build world-class applications</p>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <span class="tech-icon">☕</span>
+                    <h3>Java</h3>
+                    <p>13+ years</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">🍃</span>
+                    <h3>Spring Boot</h3>
+                    <p>Microservices</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">🅰️</span>
+                    <h3>Angular</h3>
+                    <p>Web Apps</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">🏗️</span>
+                    <h3>Microservices</h3>
+                    <p>Architecture</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">🐳</span>
+                    <h3>Docker</h3>
+                    <p>Containers</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">☸️</span>
+                    <h3>Kubernetes</h3>
+                    <p>Orchestration</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">🔗</span>
+                    <h3>Git</h3>
+                    <p>Version Control</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">☁️</span>
+                    <h3>GCP</h3>
+                    <p>Cloud</p>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-icon">🗄️</span>
+                    <h3>PostgreSQL</h3>
+                    <p>Database</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CORE EXPERTISE SECTION -->
+    <section class="experience-section">
+        <div class="container-fluid">
+            <h2 class="section-title">Core Expertise</h2>
+            <p class="section-subtitle">Comprehensive skill set built over 13 years</p>
+            <div class="expertise-grid">
+                <div class="expertise-card">
+                    <h3>🔤 Languages</h3>
+                    <ul>
+                        <li>Java (Expert)</li>
+                        <li>SQL</li>
+                        <li>Python</li>
+                        <li>TypeScript</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <h3>🛠️ Frameworks</h3>
+                    <ul>
+                        <li>Spring Boot</li>
+                        <li>Spring Cloud</li>
+                        <li>Hibernate/JPA</li>
+                        <li>Angular</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <h3>🏗️ Architecture</h3>
+                    <ul>
+                        <li>Microservices</li>
+                        <li>System Design</li>
+                        <li>Event-Driven</li>
+                        <li>DDD</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <h3>☁️ Cloud & DevOps</h3>
+                    <ul>
+                        <li>GCP</li>
+                        <li>Docker & K8s</li>
+                        <li>CI/CD</li>
+                        <li>IaC</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <h3>🗄️ Databases</h3>
+                    <ul>
+                        <li>PostgreSQL</li>
+                        <li>MongoDB</li>
+                        <li>Redis</li>
+                        <li>Elasticsearch</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <h3>👥 Leadership</h3>
+                    <ul>
+                        <li>Team Management</li>
+                        <li>Mentoring</li>
+                        <li>Architecture Review</li>
+                        <li>Agile</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED PROJECTS SECTION -->
+    <section class="projects-section">
+        <div class="container-fluid">
+            <h2 class="section-title">Featured Projects</h2>
+            <p class="section-subtitle">Real-world projects showcasing expertise</p>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image project-image-1">🏢</div>
+                    <div class="project-content">
+                        <h3>OneVAL Enterprise Platform</h3>
+                        <p>Microservices platform with 99.9% uptime serving millions of users daily.</p>
+                        <div class="project-icons">
+                            <span class="icon-box">Java</span>
+                            <span class="icon-box">Spring Boot</span>
+                            <span class="icon-box">K8s</span>
+                            <span class="icon-box">GCP</span>
+                        </div>
+                        <a href="#" class="project-link">See Full Project →</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image project-image-2">📊</div>
+                    <div class="project-content">
+                        <h3>Real-time Analytics Engine</h3>
+                        <p>Event-driven system processing 1M+ events/minute with sub-second latency.</p>
+                        <div class="project-icons">
+                            <span class="icon-box">Kafka</span>
+                            <span class="icon-box">Spark</span>
+                            <span class="icon-box">Elasticsearch</span>
+                            <span class="icon-box">Redis</span>
+                        </div>
+                        <a href="#" class="project-link">See Full Project →</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image project-image-3">💳</div>
+                    <div class="project-content">
+                        <h3>Payment Processing System</h3>
+                        <p>Fault-tolerant payment system with PCI-DSS compliance and zero downtime.</p>
+                        <div class="project-icons">
+                            <span class="icon-box">Spring</span>
+                            <span class="icon-box">Security</span>
+                            <span class="icon-box">PCI-DSS</span>
+                            <span class="icon-box">PostgreSQL</span>
+                        </div>
+                        <a href="#" class="project-link">See Full Project →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOG/POSTS SECTION -->
+    <section class="blog-section" id="blog">
+        <div class="container-fluid">
+            <h2 class="section-title">Latest Insights & Articles</h2>
+            <p class="section-subtitle">Sharing knowledge from 13 years of experience</p>
+            <div class="blog-grid">
+                <div class="blog-card">
+                    <div class="blog-date">📅 Feb 14, 2026</div>
+                    <h3>Debugging Memory Leaks in Production</h3>
+                    <p>Guide to identifying and resolving memory leaks in production Java applications.</p>
+                    <div class="blog-tags">
+                        <span class="blog-tag">#Java</span>
+                        <span class="blog-tag">#Performance</span>
+                        <span class="blog-tag">#Debugging</span>
+                    </div>
+                    <a href="/posts" class="read-more">Read More →</a>
+                </div>
+                <div class="blog-card">
+                    <div class="blog-date">📅 Feb 10, 2026</div>
+                    <h3>Microservices Design Patterns</h3>
+                    <p>Essential patterns including Circuit Breaker, Saga, API Gateway, and Service Mesh.</p>
+                    <div class="blog-tags">
+                        <span class="blog-tag">#Microservices</span>
+                        <span class="blog-tag">#Architecture</span>
+                        <span class="blog-tag">#Spring Boot</span>
+                    </div>
+                    <a href="/posts" class="read-more">Read More →</a>
+                </div>
+                <div class="blog-card">
+                    <div class="blog-date">📅 Feb 5, 2026</div>
+                    <h3>Scaling Applications on GCP</h3>
+                    <p>Best practices for building and scaling cloud-native applications on GCP.</p>
+                    <div class="blog-tags">
+                        <span class="blog-tag">#GCP</span>
+                        <span class="blog-tag">#Kubernetes</span>
+                        <span class="blog-tag">#Cloud</span>
+                    </div>
+                    <a href="/posts" class="read-more">Read More →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS SECTION -->
+    <section class="stats-section">
+        <div class="container-fluid">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number">13+</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Projects Delivered</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Developers Mentored</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime Record</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-final-section">
+        <div class="container-fluid">
+            <div class="cta-box">
+                <h2>Ready to Collaborate?</h2>
+                <p>Let's discuss architecture, system design, or your next big project</p>
+                <div class="cta-buttons-final">
+                    <a href="/contact" class="btn btn-bright-blue btn-large">Get In Touch</a>
+                    <a href="/posts" class="btn btn-bright-yellow btn-large">Read My Posts</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>
