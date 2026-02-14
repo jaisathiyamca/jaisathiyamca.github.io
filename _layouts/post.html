@@ -1,0 +1,46 @@
+---
+layout: default
+---
+
+<div class="post-header">
+    <div class="container">
+        <h1>{{ page.title }}</h1>
+        <div class="post-meta">
+            <span>📅 {{ page.date | date: "%B %d, %Y" }}</span>
+            <span>✍️ {{ site.author.name }}</span>
+            {% if page.reading_time %}
+            <span>⏱️ {{ page.reading_time }} min read</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<article class="post-content">
+    {{ content }}
+    
+    {% if page.tags %}
+    <div class="post-tags">
+        <strong>Tags:</strong>
+        {% for tag in page.tags %}
+            <span class="tag">#{{ tag }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+</article>
+
+<!-- Post Navigation -->
+<div class="post-nav">
+    {% if page.previous.url %}
+    <div style="text-align: left;">
+        <h4>← Previous Post</h4>
+        <a href="{{ page.previous.url }}">{{ page.previous.title }}</a>
+    </div>
+    {% endif %}
+    
+    {% if page.next.url %}
+    <div style="text-align: right;">
+        <h4>Next Post →</h4>
+        <a href="{{ page.next.url }}">{{ page.next.title }}</a>
+    </div>
+    {% endif %}
+</div>

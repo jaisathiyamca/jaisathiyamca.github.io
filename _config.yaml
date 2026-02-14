@@ -1,14 +1,63 @@
-title: Sathiyaraj Portfolio
-description: Professional Portfolio & Daily Learning
+# Site Configuration
+title: Sathiyaraj
+description: >
+  Senior Java Developer & Practicing Software Architect
+  | 13 Years of Experience
+  | Sharing Technical Insights & Daily Challenges
 baseurl: ""
 url: "https://jaisathiyamca.github.io"
-github_username: jaisathiyamca
-email: jaisathiyamca01@gmail.com.com
 
-# THEME - Choose ONE from the list below
-theme: pages-themes/architect@v0.2.0
+# Author Information
+author:
+  name: Sathiya
+  email: jaisathiyamca01@gmail.com
+  bio: "Senior Java Developer and Practicing Software Architect with 13 years of experience in designing and building scalable enterprise applications. Passionate about clean code, system design, and sharing knowledge through writing."
+  profile_image: /assets/images/profile.jpg
+  location: "Chennai"
+
+# Social Media Links
+social:
+  github: jaisathiyamca
+  linkedin: your-linkedin-profile
+  twitter: your-twitter-handle
+  email: jaisathiyamca01@gmail.com
+
+# Build Settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
 
 # Plugins
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Exclude files
+exclude:
+  - .jekyll-cache/
+  - .gitignore
+  - node_modules/
+  - vendor/
+  - .DS_Store
+
+# Collections
+collections:
+  challenges:
+    output: true
+    permalink: /challenges/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      permalink: /blog/:year/:month/:day/:title/
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
