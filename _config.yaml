@@ -1,0 +1,14 @@
+title: Sathiyaraj Portfolio
+description: Professional Portfolio & Daily Learning
+baseurl: ""
+url: "https://jaisathiyamca.github.io"
+github_username: jaisathiyamca
+email: jaisathiyamca01@gmail.com.com
+
+# THEME - Choose ONE from the list below
+theme: Architect
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
