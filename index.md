@@ -3,31 +3,61 @@ layout: neo-default
 title: Jai Sathiya | Senior Java Developer & Architect
 ---
 
+<style>
+/* Compact layout overrides to reduce vertical spacing and font sizes */
+.container-fluid{padding-left:12px;padding-right:12px;}
+.hero-section{padding:12px 0;}
+.hero-wrapper{display:flex;flex-wrap:wrap;align-items:center;gap:12px;}
+.hero-left{flex:1 1 60%;}
+.hero-right{flex:1 1 35%;display:flex;justify-content:center;}
+.badge-primary{font-size:0.85rem;padding:4px 8px;}
+.hero-title{font-size:1.6rem;margin:6px 0 4px;}
+.hero-subtitle{font-size:1rem;margin:0 0 6px;}
+.hero-description{font-size:0.92rem;line-height:1.15;margin:0 0 8px;max-height:3.7em;overflow:hidden;}
+.profile-image{width:100px;height:100px;border-radius:8px;}
+.floating-icon{display:none!important;}
+.section-title{font-size:1.05rem;margin-bottom:6px;}
+.section-subtitle{font-size:0.9rem;margin-bottom:8px;}
+.tech-grid .tech-card{padding:8px;}
+.tech-grid .tech-card h3{font-size:0.95rem;margin:6px 0;}
+.expertise-grid .expertise-card{padding:8px;}
+.expertise-grid li{font-size:0.86rem;margin:2px 0;}
+.project-content h3{font-size:1rem;margin:4px 0;}
+.project-content p{font-size:0.9rem;margin:4px 0;}
+.stats-grid{gap:8px;}
+.stat-number{font-size:1.2rem;}
+.cta-final-section{padding:12px 0;}
+.btn-large{padding:8px 12px;font-size:0.95rem;}
+@media (max-width:768px){ .hero-left,.hero-right{flex:1 1 100%} .profile-image{width:80px;height:80px} }
+</style>
+
 <!-- HERO SECTION -->
 <section class="hero-section">
     <div class="container-fluid">
         <div class="hero-wrapper">
             <!-- LEFT SIDE TEXT -->
             <div class="hero-left">
-                <div class="badge-primary">💼 ARCHITECT</div>
-                <h1 class="hero-title">
-                    Hi, I'm <span class="accent-orange">Jai Sathiya</span>
-                </h1>
-                <p class="hero-subtitle">Senior Java Developer & Software Architect</p>
-                <p class="hero-description">
-                    13+ years of experience building scalable enterprise applications. 
-                    Expert in Microservices, Cloud Architecture, and System Design.
-                </p>
+                <div class="badge-primary">💼 Software Architect &amp; Engineering Lead</div>
+<h1 class="hero-title">
+    Hi, I'm <span class="accent-orange">Sathiyaraj</span>
+</h1>
+<p class="hero-subtitle">Senior Java Architect · Engineering Lead</p>
+<p class="hero-description">
+    13+ years delivering resilient, high-performance enterprise systems with Java &amp; Spring Boot.
+    Specialized in microservices, cloud-native (GCP) architectures, distributed systems, observability,
+    and CI/CD. Experienced in leading cross-functional teams, mentoring engineers, and driving
+    architecture decisions to scale secure & performance driven production systems.
+</p>
                 <div class="cta-buttons">
-                    <a href="/cv" class="btn btn-bright-yellow">📥 Download CV</a>
+                    <a href="/assets/Sathiyaraj_Resume.pdf" class="btn btn-bright-yellow">📥 Download CV</a>
                     <a href="/posts" class="btn btn-bright-blue">📝 View Posts</a>
                 </div>
-            </div>
+            </div>̦
 
             <!-- RIGHT SIDE PROFILE IMAGE -->
             <div class="hero-right">
                 <div class="profile-image-wrapper">
-                    <img src="/assets/images/profile.jpg" alt="Jai Sathiya" class="profile-image">
+                    <img src="/assets/images/profile.png" alt="Sathiya" class="profile-image">
                 </div>
                 <!-- FLOATING ICONS -->
                 <div class="floating-icon icon-1">💻</div>
@@ -78,7 +108,7 @@ title: Jai Sathiya | Senior Java Developer & Architect
             </div>
             <div class="tech-card card-yellow">
                 <span class="tech-icon">📊</span>
-                <h3>AWS</h3>
+                <h3>GCP</h3>
                 <p>Cloud infrastructure</p>
             </div>
             <div class="tech-card card-teal">
@@ -106,7 +136,7 @@ title: Jai Sathiya | Senior Java Developer & Architect
                 <ul>
                     <li>Java (Expert)</li>
                     <li>SQL</li>
-                    <li>Groovy/Kotlin</li>
+                    <li>Python</li>
                 </ul>
             </div>
             <div class="expertise-card card-bright-yellow">
@@ -115,6 +145,7 @@ title: Jai Sathiya | Senior Java Developer & Architect
                     <li>Spring Boot</li>
                     <li>Spring Cloud</li>
                     <li>Hibernate/JPA</li>
+                    <li>Angular</li>
                 </ul>
             </div>
             <div class="expertise-card card-bright-blue">
@@ -128,7 +159,7 @@ title: Jai Sathiya | Senior Java Developer & Architect
             <div class="expertise-card card-bright-teal">
                 <h3>☁️ Cloud & DevOps</h3>
                 <ul>
-                    <li>AWS</li>
+                    <li>GCP</li>
                     <li>Docker & K8s</li>
                     <li>CI/CD</li>
                 </ul>
@@ -163,8 +194,8 @@ title: Jai Sathiya | Senior Java Developer & Architect
             <div class="project-card card-orange-border">
                 <div class="project-image project-image-1"></div>
                 <div class="project-content">
-                    <h3>Microservices Platform</h3>
-                    <p>Architected and deployed microservices platform serving 10M+ daily requests</p>
+                    <h3>OneVAL</h3>
+                    <p>Architected and deployed microservices platform with best practices and architecte </p>
                     <div class="project-icons">
                         <span class="icon-box">Java</span>
                         <span class="icon-box">K8s</span>
