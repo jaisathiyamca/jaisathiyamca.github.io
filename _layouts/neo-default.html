@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <meta name="description" content="{{ site.description }}">
+    <meta name="author" content="{{ site.author.name }}">
+    
+    <link rel="stylesheet" href="{{ '/assets/css/neo-brutalism.css' | relative_url }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ '/assets/images/favicon.ico' | relative_url }}">
+</head>
+<body>
+    <!-- HEADER / NAVIGATION -->
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="container-fluid">
+                <div class="nav-content">
+                    <a href="{{ '/' | relative_url }}" class="logo">
+                        <span class="logo-text">Jai Sathiya</span>
+                    </a>
+                    
+                    <ul class="nav-menu">
+                        <li><a href="{{ '/' | relative_url }}">Home</a></li>
+                        <li><a href="{{ '/cv' | relative_url }}">CV</a></li>
+                        <li><a href="{{ '/posts' | relative_url }}">Posts</a></li>
+                        <li><a href="{{ '/about' | relative_url }}">About</a></li>
+                        <li><a href="{{ '/contact' | relative_url }}">Contact</a></li>
+                    </ul>
+
+                    <div class="social-icons">
+                        <a href="https://github.com/{{ site.social.github }}" target="_blank" title="GitHub">GitHub</a>
+                        <a href="https://linkedin.com/in/{{ site.social.linkedin }}" target="_blank" title="LinkedIn">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        {{ content }}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="container-fluid">
+            <p>&copy; 2026 {{ site.author.name }}. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+</body>
+</html>
