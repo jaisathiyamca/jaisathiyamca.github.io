@@ -1,88 +1,68 @@
 ---
 layout: default
-title: About Me
+title: About
 ---
 
-# About Jai Sathiya
+# About Me
 
-## Professional Summary
+I'm Sathiyaraj, a Lead Java Developer based in Tamil Nadu, India. I've been writing Java professionally since 2013 — starting out at CAMS building financial workflow systems, then moving to Infosys for enterprise delivery work, and since 2018 I've been at **Renault Nissan Technology Business Center India** where I currently lead Java development on the team.
 
-I am a Senior Java Developer and Practicing Software Architect with 13 years of professional experience in designing and developing enterprise-grade applications. My passion lies in creating scalable, maintainable, and robust systems while continuously learning and sharing knowledge with the community.
+Most of my work sits at the intersection of backend engineering and team leadership. On a given week I might be designing a new microservice, reviewing pull requests, debugging a GKE deployment, or working with the team on a tricky SonarQube quality issue. It's rarely just one thing.
 
-## Career Journey
+---
 
-### Early Years (2011-2015)
-Started my career as a Java Developer, building web applications and learning the fundamentals of software development. Worked extensively with Java EE, Servlets, and JSP technologies.
+## What I Work With
 
-### Growth Phase (2015-2018)
-Progressed to Senior Developer role, taking on more complex projects and mentoring junior developers. Transitioned to Spring Framework and started exploring microservices architecture.
+The core of my stack is **Java and Spring Boot** for backend services, **Angular** when frontend work is needed, and **GCP/GKE** for cloud deployments. For CI/CD I use GitHub Actions, observability goes through **Dynatrace**, and code quality is enforced through **SonarQube**. Database-wise, most of my recent work has been on **PostgreSQL**, though I have solid Oracle and SQL Server experience from my earlier years at CAMS.
 
-### Leadership & Architecture (2018-Present)
-Moved into an Architect role where I now focus on:
-- Designing enterprise systems and solutions
-- Establishing architectural patterns and best practices
-- Leading technical discussions and design reviews
-- Mentoring development teams
-- Contributing to open-source projects
+I'm comfortable owning a service end-to-end — from the initial design conversation through to writing the code, setting up the pipeline, and making sure it's observable in production.
 
-## Core Competencies
+---
 
-### Technical Skills
-- **Languages**: Java (Expert), SQL, Groovy, Kotlin
-- **Frameworks**: Spring Boot, Spring Cloud, Hibernate, JPA
-- **Architectures**: Microservices, Event-Driven, REST, GraphQL
-- **Databases**: MySQL, PostgreSQL, MongoDB, Redis, Elasticsearch
-- **DevOps**: Docker, Kubernetes, AWS (EC2, RDS, S3), CI/CD pipelines
+## Career
 
-### Architectural Expertise
-- System design and scalability
-- Microservices architecture
-- API design and REST principles
-- Event-driven systems
-- Database optimization and design
-- Security best practices
+**Lead Developer — Renault Nissan Technology Business Center India**
+*Oct 2018 – Present*
 
-### Soft Skills
-- Technical mentoring and team leadership
-- Stakeholder communication
-- Problem-solving and critical thinking
-- Code review and quality assurance
-- Knowledge sharing and documentation
+This is where I've done my most significant work. I joined as a developer and over time grew into the lead role on our Java platform. The codebase is non-trivial, the deployment environment is GKE on GCP, and the team spans different experience levels — so the work is a mix of technical ownership and people coordination.
+
+Some things I'm particularly proud of from this period: getting our GitHub Actions pipelines in shape (we cut deployment time significantly), setting up Dynatrace monitoring properly so we can actually see what's happening in production, and building a code review culture that's improved the quality of what we ship.
+
+---
+
+**Technology Analyst — Infosys Ltd**
+*Jan 2017 – Oct 2018*
+
+Infosys gave me exposure to large-scale enterprise delivery. I worked on Java/Spring Boot applications for enterprise clients, led delivery of modules, and did a lot of code review and mentoring work. It's where I got more structured about how to manage quality in a team environment.
+
+---
+
+**Senior Engineer — Computer Age Management Services (CAMS) Pvt Ltd**
+*Aug 2013 – Jan 2017*
+
+CAMS is where I started. It's one of India's largest mutual fund service providers, and I worked on Java-based BPM and workflow systems that supported their back-office operations. Heavy Oracle SQL work, Hexagon BPM integration, and lots of collaboration with business stakeholders to translate requirements into working systems. A solid grounding in the basics of building things that have to work reliably.
+
+---
 
 ## Education
 
-- **B.Tech in Computer Science**
-  - [Your University Name]
-  - Graduated: [Year]
+**Master of Computer Applications (MCA)** — Bharathidasan University, 2018
+**Bachelor of Computer Applications (BCA)** — Bharathidasan University, 2012
 
-## Certifications
+---
 
-- Oracle Certified Associate Java Programmer
-- AWS Solutions Architect Associate
-- Kubernetes Application Developer (CKAD)
+## What I'm Looking For
 
-## Why This Blog?
+I'm at a stage in my career where I want to work in a stronger market with more scope for senior and architect-level roles. Specifically, I'm looking at **Europe** (Netherlands, Germany, UK, Sweden, Switzerland), **Singapore**, and **Malaysia** — either through relocation or remote.
 
-I started this blog to:
-1. **Document Learning** - Capture insights and lessons learned from daily work
-2. **Share Knowledge** - Help fellow developers with solutions and best practices
-3. **Community Contribution** - Give back to the community that helped me grow
-4. **Reflective Practice** - Improve my own understanding through writing
+What I'm looking for in a role: a technically strong team, meaningful problems to solve, and the room to contribute both as an engineer and as a lead. I'm not chasing a title — I care more about the quality of the work and the people I'd be working with.
 
-## Current Focus
+If that sounds like a fit for what you're building, I'd be glad to have a conversation.
 
-- Advanced microservices patterns
-- Event-driven architecture at scale
-- Cloud-native development (AWS/Kubernetes)
-- Team mentoring and architectural leadership
-- Open-source contributions
+---
 
-## Let's Connect
+## Get in Touch
 
-I'm always open to:
-- Technical discussions and collaborations
-- Speaking engagements at meetups/conferences
-- Mentoring aspiring developers
-- Contributing to open-source projects
-
-Feel free to [reach out](/contact) if you'd like to discuss any of these topics!
+**Email:** srisathiyamca@gmail.com
+**LinkedIn:** [linkedin.com/in/sathiyaraj-venkatachalapathy-706569188](https://www.linkedin.com/in/sathiyaraj-venkatachalapathy-706569188/)
+**GitHub:** [github.com/jaisathiyamca](https://github.com/jaisathiyamca)
