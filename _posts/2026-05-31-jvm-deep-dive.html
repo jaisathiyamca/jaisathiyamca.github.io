@@ -1,0 +1,940 @@
+---
+layout: post
+title: "JVM Deep Dive — From Zero to Pro"
+date: 2026-05-31
+categories: [java, jvm, performance]
+tags: [java, jvm, garbage-collection, jit, memory, bytecode, java21, java17, java11, java8]
+excerpt: "A visually rich, story-driven guide to the JVM — animated diagrams, production war stories, and every major Java version explained from first principles."
+---
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ── RESET & BASE ── */
+.jvm-article *{box-sizing:border-box;margin:0;padding:0;}
+.jvm-article{font-family:'Inter',system-ui,sans-serif;color:#1e293b;line-height:1.7;max-width:860px;margin:0 auto;}
+
+/* ── TYPOGRAPHY ── */
+.jvm-article h2{font-size:1.6rem;font-weight:800;color:#0f172a;letter-spacing:-.5px;margin:48px 0 12px;}
+.jvm-article h3{font-size:1.15rem;font-weight:700;color:#0f172a;margin:32px 0 10px;}
+.jvm-article p{font-size:0.95rem;color:#334155;line-height:1.75;margin-bottom:14px;}
+.jvm-article code{font-family:'Fira Code',monospace;font-size:0.82rem;background:#f1f5f9;color:#4f46e5;padding:2px 6px;border-radius:4px;}
+.jvm-article a{color:#6366f1;text-decoration:none;}
+
+/* ── PART DIVIDER ── */
+.part-divider{text-align:center;margin:56px 0 32px;padding:28px;background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:16px;color:white;}
+.part-divider .pn{display:inline-block;background:#6366f1;font-size:0.65rem;font-weight:800;padding:3px 12px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.part-divider h2{font-size:1.4rem;color:white;margin:0 0 6px;}
+.part-divider p{font-size:0.82rem;color:#94a3b8;margin:0;}
+
+/* ── CALLOUT BOXES ── */
+.box{border-radius:0 12px 12px 0;padding:16px 20px;margin:20px 0;}
+.box .box-label{font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;}
+.box p{font-size:0.85rem;line-height:1.7;margin:0;}
+.box-story{background:#fffbeb;border-left:4px solid #f59e0b;}
+.box-story .box-label{color:#d97706;}
+.box-story p{color:#78350f;}
+.box-prod{background:#f0fdf4;border-left:4px solid #22c55e;}
+.box-prod .box-label{color:#16a34a;}
+.box-prod p{color:#14532d;}
+.box-warn{background:#fef2f2;border-left:4px solid #ef4444;}
+.box-warn .box-label{color:#dc2626;}
+.box-warn p{color:#7f1d1d;}
+
+/* ── CODE BLOCK ── */
+.code-block{background:#0f172a;border-radius:12px;overflow:hidden;margin:20px 0;}
+.code-block .code-header{background:#1e293b;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.code-block .lang-badge{font-size:0.62rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;}
+.code-block .dots{display:flex;gap:5px;}
+.code-block .dot{width:10px;height:10px;border-radius:50%;}
+.code-block pre{padding:18px 20px;font-family:'Fira Code',monospace;font-size:0.8rem;line-height:1.7;color:#e2e8f0;overflow-x:auto;white-space:pre;}
+.code-block .cm{color:#64748b;} .code-block .ck{color:#a5b4fc;} .code-block .cs{color:#86efac;} .code-block .ct{color:#67e8f9;} .code-block .cn{color:#fbbf24;}
+
+/* ── DATA TABLE ── */
+.data-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.82rem;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;}
+.data-table th{background:#1e293b;color:white;padding:10px 14px;text-align:left;font-weight:600;font-size:0.78rem;}
+.data-table td{padding:9px 14px;border-bottom:1px solid #f1f5f9;color:#334155;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:nth-child(even) td{background:#f8fafc;}
+
+/* ── TOC ── */
+.toc{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px;margin:24px 0;}
+.toc h3{font-size:0.82rem;font-weight:700;color:#0f172a;margin-bottom:12px;}
+.toc ol{padding-left:20px;}
+.toc li{font-size:0.8rem;color:#6366f1;padding:3px 0;font-weight:500;}
+
+/* ── VERSION CARD ── */
+.ver-card{border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;margin:24px 0;}
+.ver-head{background:#1e293b;padding:14px 20px;display:flex;align-items:center;gap:12px;}
+.ver-badge{font-size:0.65rem;font-weight:800;padding:3px 12px;border-radius:20px;color:white;flex-shrink:0;}
+.lts-badge{background:#10b981;} .reg-badge{background:#6366f1;}
+.ver-title{color:white;font-size:0.95rem;font-weight:700;}
+.ver-year{color:#94a3b8;font-size:0.72rem;margin-top:2px;}
+.ver-body{padding:18px 20px;background:white;}
+.ver-body p{font-size:0.85rem;margin-bottom:10px;}
+.feat-list{list-style:none;padding:0;margin:0 0 12px;}
+.feat-list li{font-size:0.82rem;color:#334155;padding:5px 0 5px 18px;position:relative;border-bottom:1px solid #f8fafc;}
+.feat-list li:last-child{border-bottom:none;}
+.feat-list li::before{content:'→';position:absolute;left:0;color:#6366f1;font-weight:700;}
+
+/* ═══════════════════════════════════════════════
+   ANIMATED DIAGRAMS
+═══════════════════════════════════════════════ */
+
+.anim-wrap{background:#0f172a;border-radius:16px;padding:24px;margin:24px 0;overflow:hidden;}
+.anim-title{font-size:0.65rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;text-align:center;}
+
+/* JVM Architecture SVG */
+.arch-svg{width:100%;height:auto;}
+
+/* Memory Heap Animation */
+.heap-demo{position:relative;height:280px;}
+.heap-label{font-size:0.7rem;font-weight:700;fill:#94a3b8;font-family:'Inter',sans-serif;}
+.region-label{font-size:0.65rem;font-weight:600;fill:#64748b;font-family:'Inter',sans-serif;}
+.obj{animation:objAppear .4s ease-out forwards;}
+@keyframes objAppear{from{opacity:0;transform:scale(0.5);}to{opacity:1;transform:scale(1);}}
+@keyframes objDie{from{opacity:1;}to{opacity:0;transform:scale(0);}}
+@keyframes objMove{from{opacity:1;}to{opacity:1;}}
+.obj-alive{fill:#6366f1;rx:4;}
+.obj-dead{fill:#ef4444;}
+.obj-old{fill:#10b981;}
+.gc-sweep{animation:sweep 1.2s ease-in-out infinite;}
+@keyframes sweep{0%,100%{opacity:0;}50%{opacity:.25;}}
+
+/* GC Animation */
+.gc-container{font-family:'Inter',sans-serif;}
+.gc-btn{background:#6366f1;color:white;border:none;padding:8px 20px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;margin-top:14px;transition:background .2s;}
+.gc-btn:hover{background:#4f46e5;}
+.gc-status{font-size:0.72rem;color:#94a3b8;margin-top:8px;text-align:center;min-height:18px;}
+
+/* JIT Compilation Timeline */
+.jit-bar{height:8px;border-radius:4px;transition:width 1.5s ease-out;}
+
+/* Virtual Threads Comparison */
+.vt-thread{animation:vtPulse 1.8s ease-in-out infinite;}
+@keyframes vtPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+.vt-blocked{fill:#ef4444;animation:blockedFlash 2s ease-in-out infinite;}
+@keyframes blockedFlash{0%,100%{fill:#ef4444;opacity:.5;}50%{fill:#ef4444;opacity:1;}}
+.vt-active{fill:#10b981;}
+.vt-virtual{fill:#6366f1;}
+
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* Mastery path */
+.mastery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0;}
+.mastery-card{border-radius:12px;padding:16px;text-align:center;}
+.mastery-card .m-level{font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.mastery-card .m-icon{font-size:1.6rem;margin-bottom:8px;}
+.mastery-card .m-skills{font-size:0.7rem;line-height:1.5;}
+.m-beginner{background:#f0fdf4;}.m-beginner .m-level{color:#16a34a;}
+.m-intermediate{background:#eff6ff;}.m-intermediate .m-level{color:#2563eb;}
+.m-advanced{background:#fffbeb;}.m-advanced .m-level{color:#d97706;}
+.m-pro{background:#faf5ff;}.m-pro .m-level{color:#7c3aed;}
+
+@media(max-width:640px){
+  .mastery-grid{grid-template-columns:repeat(2,1fr);}
+  .jvm-article h2{font-size:1.3rem;}
+}
+</style>
+
+<div class="jvm-article">
+
+<!-- OPENING HOOK -->
+<div class="box box-story">
+  <div class="box-label">🕐 3:14 AM — Production Alert</div>
+  <p>It's 3:14 AM. Your phone buzzes. The monitoring dashboard is red. A Spring Boot service handling 50,000 requests per minute is throwing <code>OutOfMemoryError: Java heap space</code> and crashing every 20 minutes. Users are getting 503s.</p>
+  <p style="margin-top:8px;">This isn't hypothetical. It happened on a large-scale production system I've worked on. We fixed it in 47 minutes — not hours — because we understood the JVM deeply enough to read a heap dump, find the leak, and push a targeted fix. This article is everything I wish I'd read before that night.</p>
+</div>
+
+<div class="toc">
+  <h3>📖 What You'll Learn</h3>
+  <ol>
+    <li>What the JVM actually is — bytecode, WORA, JDK vs JRE vs JVM</li>
+    <li>JVM Architecture — Class Loader, Memory regions, Execution Engine</li>
+    <li>Garbage Collection — how it really works, animated step by step</li>
+    <li>JIT Compilation — why Java is fast after warmup</li>
+    <li>Java 8 → 21: Every major version with production impact</li>
+    <li>Virtual Threads — the biggest change in Java in a decade</li>
+    <li>JVM tuning flags, thread dumps, common production problems</li>
+    <li>Production monitoring — what metrics to watch and why</li>
+  </ol>
+</div>
+
+<!-- ═══════════════════ PART 1 ═══════════════════ -->
+<div class="part-divider reveal">
+  <div class="pn">Part 1</div>
+  <h2>What Is the JVM?</h2>
+  <p>The runtime that makes Java possible — and why it's more interesting than you think</p>
+</div>
+
+<p>Most developers know "the JVM runs Java code" and move on. But inside that sentence is a system that manages millions of live objects, compiles code on the fly, and reclaims memory — all while your application serves requests without pausing.</p>
+
+<p>When you run <code>javac</code>, you don't get CPU-specific machine code. You get <strong>bytecode</strong> — a platform-neutral instruction set stored in <code>.class</code> files. The JVM reads bytecode and translates it to native instructions for whatever hardware it's running on.</p>
+
+<!-- JVM Flow Diagram -->
+<div class="anim-wrap reveal">
+  <div class="anim-title">How Java Code Becomes Execution</div>
+  <svg viewBox="0 0 760 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#6366f1"/>
+      </marker>
+    </defs>
+    <!-- Boxes -->
+    <rect x="10" y="30" width="130" height="56" rx="10" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="75" y="56" text-anchor="middle" fill="#a5b4fc" font-size="11" font-weight="700" font-family="Inter,sans-serif">Your Code</text>
+    <text x="75" y="72" text-anchor="middle" fill="#64748b" font-size="10" font-family="Fira Code,monospace">MyApp.java</text>
+
+    <rect x="210" y="30" width="130" height="56" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="275" y="56" text-anchor="middle" fill="#c4b5fd" font-size="11" font-weight="700" font-family="Inter,sans-serif">Bytecode</text>
+    <text x="275" y="72" text-anchor="middle" fill="#64748b" font-size="10" font-family="Fira Code,monospace">MyApp.class</text>
+
+    <rect x="410" y="30" width="130" height="56" rx="10" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="475" y="56" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="700" font-family="Inter,sans-serif">JVM</text>
+    <text x="475" y="72" text-anchor="middle" fill="#64748b" font-size="10" font-family="Inter,sans-serif">Interprets / JIT</text>
+
+    <rect x="610" y="30" width="130" height="56" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="675" y="56" text-anchor="middle" fill="#fcd34d" font-size="11" font-weight="700" font-family="Inter,sans-serif">Native Code</text>
+    <text x="675" y="72" text-anchor="middle" fill="#64748b" font-size="10" font-family="Inter,sans-serif">Runs on CPU</text>
+
+    <!-- Arrows -->
+    <line x1="142" y1="58" x2="208" y2="58" stroke="#6366f1" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="175" y="48" text-anchor="middle" fill="#6366f1" font-size="9" font-family="Inter,sans-serif" font-weight="600">javac</text>
+    <line x1="342" y1="58" x2="408" y2="58" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="375" y="48" text-anchor="middle" fill="#8b5cf6" font-size="9" font-family="Inter,sans-serif" font-weight="600">loaded by</text>
+    <line x1="542" y1="58" x2="608" y2="58" stroke="#10b981" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="575" y="48" text-anchor="middle" fill="#10b981" font-size="9" font-family="Inter,sans-serif" font-weight="600">executes</text>
+
+    <!-- Platform icons -->
+    <text x="675" y="105" text-anchor="middle" fill="#64748b" font-size="10" font-family="Inter,sans-serif">Linux · Windows · macOS · ARM · x86</text>
+    <line x1="675" y1="88" x2="675" y2="96" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+  </svg>
+</div>
+
+<table class="data-table">
+  <thead><tr><th>Term</th><th>What it includes</th><th>Think of it as</th><th>Who needs it</th></tr></thead>
+  <tbody>
+    <tr><td><strong>JVM</strong></td><td>Bytecode execution engine + GC + JIT</td><td>The engine in a car</td><td>Embedded in JRE</td></tr>
+    <tr><td><strong>JRE</strong></td><td>JVM + standard library (java.util, java.io…)</td><td>The complete car</td><td>Running Java apps</td></tr>
+    <tr><td><strong>JDK</strong></td><td>JRE + javac + jstack + jmap + jfr + tools</td><td>Car + mechanic workshop</td><td>Developing Java</td></tr>
+  </tbody>
+</table>
+
+<div class="box box-prod">
+  <div class="box-label">🏭 Production Reality — JRE vs JDK in Containers</div>
+  <p>In Docker-based Kubernetes deployments, ship the JRE — not the full JDK — to keep image sizes small. But when an incident happens and you need <code>jstack</code>, <code>jmap</code>, or <code>jfr</code>, those tools are only in the JDK. Solution: run a debug sidecar container with JDK tools that can <code>nsenter</code> into the app pod. Plan for production diagnostics before you need them at 3 AM.</p>
+</div>
+
+<!-- ═══════════════════ PART 2 ═══════════════════ -->
+<div class="part-divider reveal">
+  <div class="pn">Part 2</div>
+  <h2>JVM Architecture</h2>
+  <p>Three subsystems. One very smart runtime.</p>
+</div>
+
+<!-- Architecture Diagram -->
+<div class="anim-wrap reveal">
+  <div class="anim-title">JVM Architecture — Annotated</div>
+  <svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;" class="arch-svg">
+    <defs>
+      <marker id="a2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+        <polygon points="0 0,7 2.5,0 5" fill="#6366f1"/>
+      </marker>
+      <marker id="a3" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+        <polygon points="0 0,7 2.5,0 5" fill="#10b981"/>
+      </marker>
+    </defs>
+
+    <!-- Outer JVM border -->
+    <rect x="10" y="10" width="740" height="380" rx="16" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+    <text x="380" y="36" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="700" font-family="Inter,sans-serif" letter-spacing="2">JAVA VIRTUAL MACHINE</text>
+
+    <!-- Class Loader -->
+    <rect x="30" y="50" width="200" height="80" rx="10" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="130" y="78" text-anchor="middle" fill="#a5b4fc" font-size="11" font-weight="700" font-family="Inter,sans-serif">Class Loader Subsystem</text>
+    <text x="130" y="96" text-anchor="middle" fill="#64748b" font-size="9.5" font-family="Inter,sans-serif">Bootstrap → Extension → App</text>
+    <text x="130" y="112" text-anchor="middle" fill="#64748b" font-size="9.5" font-family="Inter,sans-serif">Loads · Links · Initialises</text>
+
+    <!-- Memory Areas -->
+    <rect x="30" y="155" width="460" height="210" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="260" y="178" text-anchor="middle" fill="#c4b5fd" font-size="11" font-weight="700" font-family="Inter,sans-serif">Runtime Data Areas (Memory)</text>
+
+    <!-- HEAP -->
+    <rect x="44" y="188" width="300" height="100" rx="8" fill="#0f172a" stroke="#6366f1" stroke-width="1"/>
+    <text x="194" y="206" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="700" font-family="Inter,sans-serif">HEAP (shared across all threads)</text>
+    <!-- Young Gen -->
+    <rect x="52" y="212" width="160" height="66" rx="6" fill="#1e293b" stroke="#6366f1" stroke-width="1"/>
+    <text x="132" y="228" text-anchor="middle" fill="#818cf8" font-size="9" font-weight="600" font-family="Inter,sans-serif">Young Generation</text>
+    <rect x="58" y="233" width="46" height="36" rx="4" fill="#312e81" stroke="#6366f1" stroke-width="1"/>
+    <text x="81" y="255" text-anchor="middle" fill="#a5b4fc" font-size="8.5" font-family="Inter,sans-serif">Eden</text>
+    <rect x="110" y="233" width="28" height="36" rx="4" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="124" y="255" text-anchor="middle" fill="#c4b5fd" font-size="8" font-family="Inter,sans-serif">S0</text>
+    <rect x="144" y="233" width="28" height="36" rx="4" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="158" y="255" text-anchor="middle" fill="#c4b5fd" font-size="8" font-family="Inter,sans-serif">S1</text>
+    <!-- Old Gen -->
+    <rect x="220" y="212" width="116" height="66" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+    <text x="278" y="228" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="600" font-family="Inter,sans-serif">Old Generation</text>
+    <text x="278" y="248" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Long-lived objects</text>
+    <text x="278" y="264" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Promoted survivors</text>
+
+    <!-- Stack -->
+    <rect x="356" y="188" width="120" height="100" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+    <text x="416" y="206" text-anchor="middle" fill="#fcd34d" font-size="10" font-weight="700" font-family="Inter,sans-serif">STACK</text>
+    <text x="416" y="220" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Per thread</text>
+    <rect x="366" y="226" width="100" height="18" rx="3" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+    <text x="416" y="239" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Fira Code,monospace">method frame 3</text>
+    <rect x="366" y="248" width="100" height="18" rx="3" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+    <text x="416" y="261" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Fira Code,monospace">method frame 2</text>
+    <rect x="366" y="270" width="100" height="14" rx="3" fill="#292524" stroke="#78350f" stroke-width="0.8"/>
+    <text x="416" y="281" text-anchor="middle" fill="#64748b" font-size="8" font-family="Fira Code,monospace">main()</text>
+
+    <!-- Metaspace -->
+    <rect x="44" y="298" width="140" height="54" rx="8" fill="#0f172a" stroke="#ec4899" stroke-width="1"/>
+    <text x="114" y="316" text-anchor="middle" fill="#f9a8d4" font-size="10" font-weight="700" font-family="Inter,sans-serif">METASPACE</text>
+    <text x="114" y="332" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Class metadata · Statics</text>
+    <text x="114" y="346" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Native memory · Dynamic</text>
+
+    <!-- PC Register -->
+    <rect x="196" y="298" width="132" height="54" rx="8" fill="#0f172a" stroke="#06b6d4" stroke-width="1"/>
+    <text x="262" y="316" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="700" font-family="Inter,sans-serif">PC REGISTER</text>
+    <text x="262" y="332" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Per thread</text>
+    <text x="262" y="346" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Current instruction ptr</text>
+
+    <!-- Execution Engine -->
+    <rect x="510" y="155" width="228" height="210" rx="10" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="624" y="178" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="700" font-family="Inter,sans-serif">Execution Engine</text>
+
+    <rect x="524" y="188" width="200" height="50" rx="8" fill="#0f172a" stroke="#22d3ee" stroke-width="1"/>
+    <text x="624" y="208" text-anchor="middle" fill="#67e8f9" font-size="10" font-weight="600" font-family="Inter,sans-serif">Interpreter</text>
+    <text x="624" y="226" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Executes bytecode line by line</text>
+
+    <rect x="524" y="248" width="200" height="50" rx="8" fill="#0f172a" stroke="#a78bfa" stroke-width="1"/>
+    <text x="624" y="268" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600" font-family="Inter,sans-serif">JIT Compiler (C1 + C2)</text>
+    <text x="624" y="286" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Compiles hot methods → native</text>
+
+    <rect x="524" y="308" width="200" height="44" rx="8" fill="#0f172a" stroke="#f97316" stroke-width="1"/>
+    <text x="624" y="326" text-anchor="middle" fill="#fdba74" font-size="10" font-weight="600" font-family="Inter,sans-serif">Garbage Collector</text>
+    <text x="624" y="343" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">G1 / ZGC / Shenandoah</text>
+
+    <!-- Arrows -->
+    <line x1="130" y1="130" x2="130" y2="153" stroke="#6366f1" stroke-width="1.5" marker-end="url(#a2)"/>
+    <line x1="260" y1="130" x2="480" y2="153" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a2)"/>
+    <line x1="490" y1="260" x2="508" y2="260" stroke="#10b981" stroke-width="1.5" marker-end="url(#a3)"/>
+  </svg>
+</div>
+
+<h3>2.1 The Class Loader — Your App's First Gatekeeper</h3>
+<p>Before any code runs, the JVM must find and load your <code>.class</code> files. The class loader does this in three phases: <strong>Loading</strong> (read the bytes), <strong>Linking</strong> (verify, prepare, resolve), and <strong>Initialisation</strong> (run static blocks). It uses a parent-delegation model — before loading any class, it asks its parent first, all the way up to the Bootstrap loader. This is why you can't accidentally replace <code>java.lang.String</code>.</p>
+
+<div class="box box-story">
+  <div class="box-label">🔍 Classloader Leak — Real Incident</div>
+  <p>A long-running service started hitting <code>OutOfMemoryError: Metaspace</code>. The heap dump showed thousands of <code>ClassLoader</code> instances still alive. The cause: a custom <code>URLClassLoader</code> was being created on every API request to load a plugin JAR, but was never closed. Each loader held class metadata in Metaspace indefinitely. Fix: close the classloader. Lesson — classloaders are resources. Treat them like <code>InputStream</code>s.</p>
+</div>
+
+<h3>2.2 Memory Regions — Know Your Heap</h3>
+
+<!-- Animated Memory Diagram -->
+<div class="anim-wrap reveal">
+  <div class="anim-title">Live Memory Allocation — Click "Allocate" to create objects, "Run GC" to collect</div>
+  <div style="width:100%;overflow:hidden;">
+    <svg id="mem-svg" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+      <!-- Eden -->
+      <rect x="10" y="10" width="280" height="120" rx="8" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+      <text x="150" y="32" text-anchor="middle" fill="#818cf8" font-size="10" font-weight="700" font-family="Inter,sans-serif">EDEN SPACE</text>
+      <g id="eden-objects"></g>
+
+      <!-- S0 -->
+      <rect x="300" y="10" width="110" height="120" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="1"/>
+      <text x="355" y="32" text-anchor="middle" fill="#a78bfa" font-size="9.5" font-weight="700" font-family="Inter,sans-serif">SURVIVOR 0</text>
+      <g id="s0-objects"></g>
+
+      <!-- Old Gen -->
+      <rect x="420" y="10" width="270" height="120" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="555" y="32" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700" font-family="Inter,sans-serif">OLD GENERATION</text>
+      <g id="old-objects"></g>
+
+      <!-- Metaspace -->
+      <rect x="10" y="145" width="680" height="44" rx="8" fill="#0f172a" stroke="#ec4899" stroke-width="1"/>
+      <text x="350" y="163" text-anchor="middle" fill="#f9a8d4" font-size="10" font-weight="700" font-family="Inter,sans-serif">METASPACE (native memory)</text>
+      <text x="350" y="179" text-anchor="middle" fill="#64748b" font-size="9" font-family="Inter,sans-serif">Class metadata · Method info · Static variables · Grows dynamically</text>
+    </svg>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
+      <button class="gc-btn" onclick="allocateObjects()">+ Allocate Objects</button>
+      <button class="gc-btn" style="background:#ef4444;" onclick="runMinorGC()">🗑 Run Minor GC</button>
+      <button class="gc-btn" style="background:#10b981;" onclick="promoteObjects()">↑ Promote to Old Gen</button>
+    </div>
+    <div class="gc-status" id="gc-status">Click "Allocate Objects" to start</div>
+  </div>
+</div>
+
+<h3>2.3 JIT Compilation — Why Java Gets Fast</h3>
+<p>The JVM starts by interpreting bytecode — simple, but slow for hot paths. As it monitors execution, it identifies "hot methods" (called frequently). These get compiled to native machine code by the JIT. After that, the native code runs directly — no interpretation overhead.</p>
+
+<!-- JIT Timeline Animation -->
+<div class="anim-wrap reveal">
+  <div class="anim-title">JIT Compilation Tiers — Method Performance Over Time</div>
+  <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <defs>
+      <linearGradient id="perfGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ef4444"/>
+        <stop offset="35%" stop-color="#f59e0b"/>
+        <stop offset="65%" stop-color="#6366f1"/>
+        <stop offset="100%" stop-color="#10b981"/>
+      </linearGradient>
+    </defs>
+    <!-- Axes -->
+    <line x1="60" y1="130" x2="680" y2="130" stroke="#334155" stroke-width="1.5"/>
+    <line x1="60" y1="20" x2="60" y2="130" stroke="#334155" stroke-width="1.5"/>
+    <text x="370" y="152" text-anchor="middle" fill="#64748b" font-size="10" font-family="Inter,sans-serif">Method invocation count →</text>
+    <text x="22" y="80" text-anchor="middle" fill="#64748b" font-size="10" font-family="Inter,sans-serif" transform="rotate(-90,22,80)">Performance →</text>
+
+    <!-- Performance curve -->
+    <path d="M60,120 Q120,118 180,112 Q240,106 300,90 Q360,74 420,50 Q480,34 560,28 Q620,26 680,25"
+          stroke="url(#perfGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- Phase markers -->
+    <line x1="180" y1="20" x2="180" y2="130" stroke="#334155" stroke-width="1" stroke-dasharray="4,3"/>
+    <line x1="360" y1="20" x2="360" y2="130" stroke="#334155" stroke-width="1" stroke-dasharray="4,3"/>
+    <line x1="520" y1="20" x2="520" y2="130" stroke="#334155" stroke-width="1" stroke-dasharray="4,3"/>
+
+    <!-- Phase labels -->
+    <rect x="65" y="22" width="110" height="34" rx="6" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+    <text x="120" y="36" text-anchor="middle" fill="#fca5a5" font-size="9" font-weight="700" font-family="Inter,sans-serif">Interpreter</text>
+    <text x="120" y="50" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Slow — line by line</text>
+
+    <rect x="190" y="22" width="110" height="34" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="245" y="36" text-anchor="middle" fill="#fcd34d" font-size="9" font-weight="700" font-family="Inter,sans-serif">C1 JIT</text>
+    <text x="245" y="50" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Fast compile · OK speed</text>
+
+    <rect x="370" y="22" width="110" height="34" rx="6" fill="#1e293b" stroke="#6366f1" stroke-width="1"/>
+    <text x="425" y="36" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="700" font-family="Inter,sans-serif">C2 JIT</text>
+    <text x="425" y="50" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Deep optimisation</text>
+
+    <rect x="530" y="22" width="140" height="34" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+    <text x="600" y="36" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="700" font-family="Inter,sans-serif">Steady State 🚀</text>
+    <text x="600" y="50" text-anchor="middle" fill="#64748b" font-size="8.5" font-family="Inter,sans-serif">Near C++ performance</text>
+
+    <!-- Invocation count labels -->
+    <text x="180" y="145" text-anchor="middle" fill="#64748b" font-size="9" font-family="Fira Code,monospace">~100x</text>
+    <text x="360" y="145" text-anchor="middle" fill="#64748b" font-size="9" font-family="Fira Code,monospace">~10,000x</text>
+    <text x="520" y="145" text-anchor="middle" fill="#64748b" font-size="9" font-family="Fira Code,monospace">~100,000x</text>
+  </svg>
+</div>
+
+<div class="box box-prod">
+  <div class="box-label">🏭 JIT Warmup in Kubernetes — Real Fix</div>
+  <p>After deploying a new service, the first batch of requests were 3–5x slower than steady state. The JIT was still interpreting. Fix: added a <code>/warmup</code> endpoint that fires synthetic requests through all critical code paths. Called from the Kubernetes <code>postStart</code> lifecycle hook before the pod enters the load balancer. First real user request now gets fully JIT-compiled performance.</p>
+</div>
+
+<!-- ═══════════════════ PART 3 ═══════════════════ -->
+<div class="part-divider reveal">
+  <div class="pn">Part 3</div>
+  <h2>Garbage Collection</h2>
+  <p>The art of knowing when to let go — step by step, animated</p>
+</div>
+
+<p>GC is built on a fundamental observation: <strong>most objects die young</strong>. A web request creates hundreds of temporary objects — nearly all are dead within milliseconds. Only a few live long: caches, connection pools, application context. GC is designed to exploit this fact.</p>
+
+<!-- GC Step Animation -->
+<div class="anim-wrap reveal">
+  <div class="anim-title">Minor GC Cycle — Step by Step</div>
+  <div id="gc-anim" style="width:100%;">
+    <svg id="gc-svg" viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+      <!-- Eden -->
+      <rect x="10" y="30" width="280" height="100" rx="8" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+      <text x="150" y="22" text-anchor="middle" fill="#818cf8" font-size="10" font-weight="700" font-family="Inter,sans-serif">EDEN</text>
+
+      <!-- S0 -->
+      <rect x="302" y="30" width="120" height="100" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="1"/>
+      <text x="362" y="22" text-anchor="middle" fill="#a78bfa" font-size="10" font-weight="700" font-family="Inter,sans-serif">SURVIVOR</text>
+
+      <!-- Old Gen -->
+      <rect x="435" y="30" width="255" height="100" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="562" y="22" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700" font-family="Inter,sans-serif">OLD GENERATION</text>
+
+      <!-- Objects in Eden (static for base) -->
+      <g id="gc-eden-objs">
+        <!-- Dead objects (red) -->
+        <rect x="22" y="48" width="22" height="22" rx="4" fill="#ef4444" id="d1"/><text x="33" y="63" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="52" y="48" width="22" height="22" rx="4" fill="#ef4444" id="d2"/><text x="63" y="63" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="82" y="48" width="22" height="22" rx="4" fill="#ef4444" id="d3"/><text x="93" y="63" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="22" y="80" width="22" height="22" rx="4" fill="#ef4444" id="d4"/><text x="33" y="95" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="52" y="80" width="22" height="22" rx="4" fill="#ef4444" id="d5"/><text x="63" y="95" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="82" y="80" width="22" height="22" rx="4" fill="#ef4444" id="d6"/><text x="93" y="95" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <!-- Live objects (purple) -->
+        <rect x="112" y="48" width="22" height="22" rx="4" fill="#6366f1" id="l1"/><text x="123" y="63" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✓</text>
+        <rect x="142" y="48" width="22" height="22" rx="4" fill="#6366f1" id="l2"/><text x="153" y="63" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✓</text>
+        <rect x="112" y="80" width="22" height="22" rx="4" fill="#6366f1" id="l3"/><text x="123" y="95" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✓</text>
+        <!-- More dead -->
+        <rect x="172" y="48" width="22" height="22" rx="4" fill="#ef4444" id="d7"/><text x="183" y="63" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="202" y="48" width="22" height="22" rx="4" fill="#ef4444" id="d8"/><text x="213" y="63" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="172" y="80" width="22" height="22" rx="4" fill="#ef4444" id="d9"/><text x="183" y="95" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+        <rect x="232" y="80" width="22" height="22" rx="4" fill="#ef4444" id="d10"/><text x="243" y="95" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">✗</text>
+      </g>
+
+      <!-- Survivors in Old Gen (permanent) -->
+      <g id="gc-old-objs">
+        <rect x="448" y="50" width="22" height="22" rx="4" fill="#10b981"/><text x="459" y="65" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">15</text>
+        <rect x="478" y="50" width="22" height="22" rx="4" fill="#10b981"/><text x="489" y="65" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">15</text>
+        <rect x="448" y="82" width="22" height="22" rx="4" fill="#10b981"/><text x="459" y="97" text-anchor="middle" fill="white" font-size="8" font-family="Fira Code,monospace">15</text>
+      </g>
+
+      <!-- Labels -->
+      <text x="350" y="158" text-anchor="middle" fill="#64748b" font-size="9" font-family="Inter,sans-serif">✓ = live object (has references)  ✗ = dead (no references)  15 = survived 15+ GC cycles → promoted</text>
+    </svg>
+  </div>
+  <div style="text-align:center;margin-top:8px;">
+    <button class="gc-btn" onclick="animateGC()">▶ Animate Minor GC</button>
+    <div class="gc-status" id="gc-anim-status">Press to see how Minor GC works</div>
+  </div>
+</div>
+
+<table class="data-table">
+  <thead><tr><th>Garbage Collector</th><th>Default Since</th><th>Pause Type</th><th>Typical Pause</th><th>Best For</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Serial GC</strong></td><td>Java 1.3</td><td>Stop-the-world</td><td>100ms–2s</td><td>CLI tools, tiny heaps</td></tr>
+    <tr><td><strong>Parallel GC</strong></td><td>Java 5</td><td>Stop-the-world</td><td>50ms–500ms</td><td>Batch jobs, throughput focus</td></tr>
+    <tr><td><strong>G1 GC</strong></td><td>Java 9 (default)</td><td>Mostly concurrent</td><td>30–200ms</td><td>Most server applications</td></tr>
+    <tr><td><strong>ZGC</strong></td><td>Java 15 (production)</td><td>Concurrent</td><td>&lt;1ms</td><td>Low-latency APIs</td></tr>
+    <tr><td><strong>Shenandoah</strong></td><td>OpenJDK 12</td><td>Concurrent</td><td>&lt;10ms</td><td>Low-latency (OpenJDK)</td></tr>
+  </tbody>
+</table>
+
+<div class="box box-prod">
+  <div class="box-label">🏭 G1 → ZGC Migration — Real Numbers</div>
+  <p>A latency-critical API had a strict 200ms p99 SLA. With G1, occasional 180–220ms GC pauses violated the SLA 3–5 times per hour. After switching to ZGC on Java 17, GC pauses dropped to 2–4ms. p99 latency fell from 195ms to 140ms. CPU usage went up ~8% due to concurrent GC work — a completely acceptable tradeoff for a latency-sensitive service.</p>
+</div>
+
+<!-- ═══════════════════ PART 4 ═══════════════════ -->
+<div class="part-divider reveal">
+  <div class="pn">Part 4</div>
+  <h2>Java Versions — 8 to 21</h2>
+  <p>What changed in each release, and what it meant in real production systems</p>
+</div>
+
+<div class="ver-card reveal">
+  <div class="ver-head"><span class="ver-badge lts-badge">LTS</span><div><div class="ver-title">Java 8 — Lambdas, Streams, and the Death of PermGen</div><div class="ver-year">Released 2014 · Still the most-deployed Java version globally</div></div></div>
+  <div class="ver-body">
+    <p>Java 8 was a paradigm shift. Functional programming arrived. The modern Spring Boot ecosystem was built on it.</p>
+    <ul class="feat-list">
+      <li><strong>Lambda expressions</strong> — anonymous functions without the anonymous class ceremony</li>
+      <li><strong>Stream API</strong> — composable functional pipelines: filter, map, reduce, collect</li>
+      <li><strong>Optional&lt;T&gt;</strong> — explicit null handling — no more silent NPE landmines</li>
+      <li><strong>PermGen removed → Metaspace</strong> — dynamic native memory, no more PermGen OOM</li>
+      <li><strong>New Date/Time API</strong> — finally replaced the broken <code>Calendar</code> class</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="lang-badge">Java 8</span><div class="dots"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#f59e0b"></div><div class="dot" style="background:#10b981"></div></div></div>
+      <pre><span class="cm">// Before Java 8 — verbose anonymous class + loop</span>
+List&lt;String&gt; result = new ArrayList&lt;&gt;();
+for (String s : items) {
+    if (s.startsWith("active_")) result.add(s.toUpperCase());
+}
+
+<span class="cm">// Java 8 — streams + lambdas: readable, composable, parallelisable</span>
+List&lt;String&gt; result = items.stream()
+    .filter(s -&gt; s.startsWith("active_"))
+    .map(String::toUpperCase)
+    .sorted()
+    .collect(Collectors.toList());
+
+<span class="cm">// Optional — chain without null checks</span>
+<span class="ck">String</span> city = user
+    .map(User::getAddress)
+    .map(Address::getCity)
+    .orElse("Unknown");</pre>
+    </div>
+    <div class="box box-story">
+      <div class="box-label">💥 PermGen was a real pain</div>
+      <p>Before Java 8, long-running apps that dynamically loaded classes — application servers, hot-reload setups, OSGi — would eventually hit <code>OutOfMemoryError: PermGen space</code>. The fix was always "restart the server." Java 8 moved class metadata to Metaspace in native memory, which grows dynamically. Migrating a legacy Java 7 app to Java 8 and removing PermGen flags eliminated mysterious nightly restarts permanently.</p>
+    </div>
+  </div>
+</div>
+
+<div class="ver-card reveal">
+  <div class="ver-head"><span class="ver-badge lts-badge">LTS</span><div><div class="ver-title">Java 11 — HTTP Client, Free JFR, and ZGC Arrives</div><div class="ver-year">Released 2018 · Enterprise standard for most teams</div></div></div>
+  <div class="ver-body">
+    <ul class="feat-list">
+      <li><strong>Modern HTTP Client</strong> — async, HTTP/2 support, replaces the ancient <code>HttpURLConnection</code></li>
+      <li><strong>Java Flight Recorder (JFR) free</strong> — was Oracle-commercial, now open to everyone</li>
+      <li><strong>String improvements</strong> — <code>isBlank()</code>, <code>strip()</code>, <code>lines()</code>, <code>repeat()</code></li>
+      <li><strong>ZGC experimental</strong> — the sub-millisecond GC future begins</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="lang-badge">Java 11</span><div class="dots"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#f59e0b"></div><div class="dot" style="background:#10b981"></div></div></div>
+      <pre><span class="cm">// HTTP Client — clean, async, HTTP/2</span>
+HttpClient client = HttpClient.newBuilder()
+    .connectTimeout(Duration.ofSeconds(10))
+    .build();
+HttpResponse&lt;String&gt; resp = client.send(
+    HttpRequest.newBuilder()
+        .uri(URI.create("https://api.example.com/data"))
+        .GET().build(),
+    HttpResponse.BodyHandlers.ofString()
+);
+
+<span class="cm">// New String methods — genuinely useful</span>
+"  hello  ".strip();          <span class="cm">// "hello" (unicode-aware, better than trim())</span>
+"line1\nline2".lines().count(); <span class="cm">// 2</span>
+"ha".repeat(3);               <span class="cm">// "hahaha"</span>
+"   ".isBlank();              <span class="cm">// true</span></pre>
+    </div>
+    <div class="box box-prod">
+      <div class="box-label">🏭 JFR Saves the Day — Latency Spike Investigation</div>
+      <p>A production service had intermittent latency spikes every few hours with no obvious cause. JFR was enabled with a rolling 5-minute buffer (less than 1% overhead). The next spike triggered a dump. Loaded in JDK Mission Control: the hotspot was immediately visible — a third-party HTTP library using <code>synchronized</code> connection pooling, causing thread contention under load. Found in 10 minutes. Without JFR, this would have taken days.</p>
+    </div>
+  </div>
+</div>
+
+<div class="ver-card reveal">
+  <div class="ver-head"><span class="ver-badge lts-badge">LTS</span><div><div class="ver-title">Java 17 — Sealed Classes, Records, and Modern Pattern Matching</div><div class="ver-year">Released 2021 · Spring Boot 3.x minimum — recommended baseline today</div></div></div>
+  <div class="ver-body">
+    <ul class="feat-list">
+      <li><strong>Sealed classes</strong> — declare exactly which classes can implement a type; compiler enforces exhaustiveness</li>
+      <li><strong>Records</strong> — immutable data classes in one line (replaces 50 lines of boilerplate POJO)</li>
+      <li><strong>Switch expressions</strong> — switch that returns a value with arrow syntax</li>
+      <li><strong>Helpful NullPointerExceptions</strong> — the JVM now tells you exactly which variable was null</li>
+      <li><strong>Pattern matching instanceof</strong> — no redundant cast after type check</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="lang-badge">Java 17</span><div class="dots"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#f59e0b"></div><div class="dot" style="background:#10b981"></div></div></div>
+      <pre><span class="cm">// Records — replaces entire POJO class</span>
+<span class="ck">record</span> <span class="ct">ValidationResult</span>(<span class="ck">String</span> id, <span class="ck">String</span> status, LocalDateTime at) {}
+
+<span class="cm">// Sealed classes — restrict which types exist</span>
+<span class="ck">sealed interface</span> <span class="ct">Result</span> <span class="ck">permits</span> Pass, Fail, Pending {}
+<span class="ck">record</span> <span class="ct">Pass</span>(<span class="ck">String</span> id, LocalDate validUntil) <span class="ck">implements</span> Result {}
+<span class="ck">record</span> <span class="ct">Fail</span>(<span class="ck">String</span> id, List&lt;String&gt; faults) <span class="ck">implements</span> Result {}
+<span class="ck">record</span> <span class="ct">Pending</span>(<span class="ck">String</span> id, <span class="ck">String</span> reason) <span class="ck">implements</span> Result {}
+
+<span class="cm">// Switch expression — exhaustive, returns value, compiler catches missed cases</span>
+<span class="ck">String</span> action = <span class="ck">switch</span> (result) {
+    <span class="ck">case</span> Pass p    -&gt; <span class="cs">"Certified until "</span> + p.validUntil();
+    <span class="ck">case</span> Fail f    -&gt; <span class="cs">"Faults: "</span> + f.faults().size();
+    <span class="ck">case</span> Pending r -&gt; <span class="cs">"Waiting: "</span> + r.reason();
+}; <span class="cm">// No default needed — compiler knows all cases are covered</span>
+
+<span class="cm">// Helpful NPE — before Java 14: just line number</span>
+<span class="cm">// After: "Cannot invoke 'Address.getCity()' because 'user.getAddress()' is null"</span></pre>
+    </div>
+    <div class="box box-prod">
+      <div class="box-label">🏭 Sealed Classes Eliminating a Class of Bugs</div>
+      <p>A workflow platform had a state machine: SUBMITTED → IN_PROGRESS → BLOCKED → COMPLETED / REJECTED. Using plain enums and if-instanceof chains, 3 production incidents in 18 months were caused by code paths that forgot to handle the BLOCKED state. After moving to sealed classes in Java 17, the compiler enforces exhaustiveness at every switch. That entire category of runtime bugs became a compile-time error.</p>
+    </div>
+  </div>
+</div>
+
+<div class="ver-card reveal">
+  <div class="ver-head"><span class="ver-badge lts-badge">LTS</span><div><div class="ver-title">Java 21 — Virtual Threads: The Biggest JVM Change in a Decade</div><div class="ver-year">Released 2023 · Project Loom ships · Millions of concurrent tasks</div></div></div>
+  <div class="ver-body">
+    <p>Virtual Threads are the most impactful change to the JVM since Java 8. They solve the fundamental mismatch between the thread-per-request model and I/O-heavy workloads — without requiring reactive programming.</p>
+
+    <!-- Virtual Threads Animation -->
+    <div class="anim-wrap">
+      <div class="anim-title">Traditional Threads vs Virtual Threads — under I/O load</div>
+      <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;" id="vt-svg">
+        <!-- Traditional side -->
+        <rect x="10" y="10" width="320" height="180" rx="10" fill="#1e293b" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="170" y="32" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="700" font-family="Inter,sans-serif">TRADITIONAL THREADS</text>
+        <text x="170" y="48" text-anchor="middle" fill="#64748b" font-size="9" font-family="Inter,sans-serif">Each thread = 1 OS thread (~1MB RAM)</text>
+
+        <!-- OS Threads (limited pool) -->
+        <text x="40" y="72" fill="#94a3b8" font-size="9" font-weight="600" font-family="Inter,sans-serif">OS Thread Pool (200 max):</text>
+        <!-- Blocked threads -->
+        <rect x="18" y="80" width="28" height="18" rx="4" fill="#ef4444" opacity="0.9" class="vt-blocked"/>
+        <rect x="50" y="80" width="28" height="18" rx="4" fill="#ef4444" opacity="0.9" class="vt-blocked" style="animation-delay:.3s"/>
+        <rect x="82" y="80" width="28" height="18" rx="4" fill="#ef4444" opacity="0.9" class="vt-blocked" style="animation-delay:.6s"/>
+        <rect x="114" y="80" width="28" height="18" rx="4" fill="#ef4444" opacity="0.9" class="vt-blocked" style="animation-delay:.9s"/>
+        <rect x="146" y="80" width="28" height="18" rx="4" fill="#ef4444" opacity="0.9" class="vt-blocked" style="animation-delay:1.2s"/>
+        <rect x="178" y="80" width="28" height="18" rx="4" fill="#ef4444" opacity="0.9" class="vt-blocked" style="animation-delay:1.5s"/>
+        <rect x="210" y="80" width="28" height="18" rx="4" fill="#ef4444" opacity="0.9" class="vt-blocked" style="animation-delay:1.8s"/>
+        <rect x="242" y="80" width="28" height="18" rx="4" fill="#10b981"/>
+        <text x="170" y="120" text-anchor="middle" fill="#fca5a5" font-size="9" font-weight="700" font-family="Inter,sans-serif">7 threads BLOCKED waiting for DB</text>
+        <text x="170" y="135" text-anchor="middle" fill="#fca5a5" font-size="9" font-family="Inter,sans-serif">OS thread is WASTED during I/O wait</text>
+        <text x="170" y="160" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700" font-family="Inter,sans-serif">Request 201 → QUEUED ⏳</text>
+        <text x="170" y="178" text-anchor="middle" fill="#64748b" font-size="9" font-family="Inter,sans-serif">Throughput limited by OS thread count</text>
+
+        <!-- Virtual side -->
+        <rect x="370" y="10" width="320" height="180" rx="10" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+        <text x="530" y="32" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="700" font-family="Inter,sans-serif">VIRTUAL THREADS (Java 21)</text>
+        <text x="530" y="48" text-anchor="middle" fill="#64748b" font-size="9" font-family="Inter,sans-serif">Each virtual thread = few KB, JVM-managed</text>
+
+        <!-- Carrier threads (small pool) -->
+        <text x="400" y="72" fill="#94a3b8" font-size="9" font-weight="600" font-family="Inter,sans-serif">Carrier Threads (just 8):</text>
+        <rect x="378" y="80" width="28" height="18" rx="4" fill="#10b981" class="vt-active"/>
+        <rect x="410" y="80" width="28" height="18" rx="4" fill="#10b981" class="vt-active" style="animation-delay:.2s"/>
+        <rect x="442" y="80" width="28" height="18" rx="4" fill="#10b981" class="vt-active" style="animation-delay:.4s"/>
+        <rect x="474" y="80" width="28" height="18" rx="4" fill="#10b981" class="vt-active" style="animation-delay:.6s"/>
+
+        <!-- Virtual threads (many) -->
+        <text x="530" y="116" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Inter,sans-serif">10,000 Virtual Threads — all running</text>
+        <rect x="378" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread"/>
+        <rect x="396" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread" style="animation-delay:.15s"/>
+        <rect x="414" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread" style="animation-delay:.3s"/>
+        <rect x="432" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread" style="animation-delay:.45s"/>
+        <rect x="450" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread" style="animation-delay:.6s"/>
+        <rect x="468" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread" style="animation-delay:.75s"/>
+        <rect x="486" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread" style="animation-delay:.9s"/>
+        <rect x="504" y="122" width="14" height="10" rx="2" fill="#6366f1" class="vt-thread" style="animation-delay:1.05s"/>
+        <text x="540" y="128" fill="#64748b" font-size="9" font-family="Inter,sans-serif">… × 10,000</text>
+
+        <text x="530" y="155" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700" font-family="Inter,sans-serif">VT blocks on DB → carrier freed ✓</text>
+        <text x="530" y="172" text-anchor="middle" fill="#10b981" font-size="10" font-weight="700" font-family="Inter,sans-serif">18,000 req/s with simple blocking code</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="lang-badge">Java 21</span><div class="dots"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#f59e0b"></div><div class="dot" style="background:#10b981"></div></div></div>
+      <pre><span class="cm">// Spring Boot 3.2+ — one property to enable virtual threads</span>
+<span class="cm">// spring.threads.virtual.enabled=true</span>
+<span class="cm">// That's it. All @RestController methods run on virtual threads.</span>
+
+<span class="cm">// Or explicitly — works just like a regular executor</span>
+<span class="ck">try</span> (ExecutorService vt = Executors.newVirtualThreadPerTaskExecutor()) {
+    IntStream.range(0, 10_000).forEach(i -&gt;
+        vt.submit(() -&gt; {
+            String result = database.query(<span class="cs">"SELECT ..."</span>); <span class="cm">// blocks VT, not OS thread</span>
+            cache.set(key, result);
+            <span class="ck">return</span> result;
+        })
+    );
+} <span class="cm">// 10,000 concurrent DB queries — no reactive code, no callbacks</span>
+
+<span class="cm">// Java 21 also: Pattern Matching for Switch (standard)</span>
+<span class="ck">String</span> describe = <span class="ck">switch</span> (obj) {
+    <span class="ck">case</span> Integer i -&gt; <span class="cs">"int: "</span> + i;
+    <span class="ck">case</span> String s  -&gt; <span class="cs">"str: "</span> + s.length();
+    <span class="ck">case</span> null      -&gt; <span class="cs">"null"</span>;
+    <span class="ck">default</span>        -&gt; <span class="cs">"other"</span>;
+};</pre>
+    </div>
+    <div class="box box-prod">
+      <div class="box-label">🏭 7x Throughput — One Config Line</div>
+      <p>A vehicle validation API makes 3–5 downstream calls per request (DB, rules engine, certificate service, audit log). Each request blocked a thread for ~80ms. With a 200-thread pool: ~2,500 req/s before queuing. After <code>spring.threads.virtual.enabled=true</code> on Java 21: 18,000 req/s. Same latency per request. No reactive programming rewrite. No callback hell. One property.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PART 5 ═══════════════════ -->
+<div class="part-divider reveal">
+  <div class="pn">Parts 5–8</div>
+  <h2>JVM Flags · Thread Dumps · Problems · Monitoring</h2>
+  <p>The operational knowledge that makes you invaluable at 3 AM</p>
+</div>
+
+<h3>Production JVM Configuration</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang-badge">Shell — Production Config</span><div class="dots"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#f59e0b"></div><div class="dot" style="background:#10b981"></div></div></div>
+  <pre><span class="cm"># Java 17 + ZGC — production microservice on Kubernetes</span>
+java \
+  -Xms1g -Xmx1g \                                <span class="cm"># Fixed heap — prevents resize pauses</span>
+  -XX:+UseZGC \                                   <span class="cm"># Sub-millisecond GC pauses</span>
+  -XX:+HeapDumpOnOutOfMemoryError \               <span class="cm"># Capture OOM for analysis</span>
+  -XX:HeapDumpPath=/var/log/app/ \
+  -XX:+ExitOnOutOfMemoryError \                   <span class="cm"># Clean pod restart via Kubernetes</span>
+  -Xlog:gc*:file=/var/log/app/gc.log:time,uptime:filecount=3,filesize=10m \
+  -XX:MetaspaceSize=128m \
+  -XX:MaxMetaspaceSize=256m \                     <span class="cm"># Cap catches classloader leaks early</span>
+  -Djava.security.egd=file:/dev/./urandom \       <span class="cm"># Faster SecureRandom on Linux</span>
+  -jar app.jar</pre>
+</div>
+
+<h3>Reading a Thread Dump</h3>
+<div class="box box-story">
+  <div class="box-label">🧊 The Frozen Service — Deadlock Diagnosed in 30 Seconds</div>
+  <p>A microservice stopped responding every few days. Memory fine. CPU near zero. No errors in logs. A thread dump (<code>jstack &lt;pid&gt;</code>) showed it immediately: Thread A holding lock X, waiting for lock Y. Thread B holding lock Y, waiting for lock X. Classic deadlock. JStack even printed "Found one Java-level deadlock." Fix: always acquire locks in the same order. Switched to <code>ConcurrentHashMap</code> and <code>ReentrantLock.tryLock()</code>. Never happened again.</p>
+</div>
+
+<table class="data-table">
+  <thead><tr><th>Problem</th><th>Symptom</th><th>Diagnosis Tool</th><th>Root Cause</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Heap OOM</strong></td><td><code>OOM: Java heap space</code>, crash</td><td>Heap dump + Eclipse MAT</td><td>Cache without eviction, unbounded collection</td></tr>
+    <tr><td><strong>Metaspace OOM</strong></td><td><code>OOM: Metaspace</code></td><td>jcmd + heap dump</td><td>Classloader leak — unclosed URLClassLoader</td></tr>
+    <tr><td><strong>High GC overhead</strong></td><td>CPU high, slow responses, STW pauses</td><td>GC logs + JFR</td><td>High allocation rate, undersized heap</td></tr>
+    <tr><td><strong>Deadlock</strong></td><td>Service hangs, zero CPU, no errors</td><td>jstack</td><td>Circular lock acquisition order</td></tr>
+    <tr><td><strong>Thread leak</strong></td><td>Thread count grows unboundedly</td><td>JMX + thread dump</td><td>ExecutorService never shut down</td></tr>
+  </tbody>
+</table>
+
+<div class="box box-prod">
+  <div class="box-label">🏭 The 3:14 AM Fix — Full Timeline</div>
+  <p><strong>T+0:</strong> OOM alert fires. Heap dump captured: <code>jcmd 1 GC.heap_dump /tmp/heap.hprof</code>.</p>
+  <p style="margin-top:6px;"><strong>T+8min:</strong> Eclipse MAT Leak Suspects report: one <code>LinkedHashMap</code> holds 847MB (71% of heap). Traced to a validation rules cache — accumulating unique request keys with no TTL or eviction.</p>
+  <p style="margin-top:6px;"><strong>T+31min:</strong> Fix: Caffeine cache with <code>expireAfterWrite(10, MINUTES)</code>, max 500 entries. Tested locally.</p>
+  <p style="margin-top:6px;"><strong>T+47min:</strong> Deployed via GitOps rolling restart. Memory stable. Alert resolved. Post-incident: added heap 80% alert to Grafana. Never hit OOM again.</p>
+</div>
+
+<h3>JVM Metrics to Monitor in Production</h3>
+<table class="data-table">
+  <thead><tr><th>Metric</th><th>Alert Threshold</th><th>What it Means</th></tr></thead>
+  <tbody>
+    <tr><td>Heap used %</td><td>&gt; 80%</td><td>GC pressure rising — OOM approaching</td></tr>
+    <tr><td>GC pause p99</td><td>&gt; 500ms</td><td>GC is causing user-visible latency spikes</td></tr>
+    <tr><td>Full GC frequency</td><td>&gt; 1 per hour</td><td>Old Gen filling too fast — allocation or retention issue</td></tr>
+    <tr><td>Thread count</td><td>Growing &gt; 10%/day</td><td>Thread leak — executor not shut down</td></tr>
+    <tr><td>Metaspace used</td><td>&gt; 80% of MaxMetaspaceSize</td><td>Classloader leak in progress</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════ MASTERY PATH ═══════════════════ -->
+<div class="part-divider reveal">
+  <div class="pn">Summary</div>
+  <h2>Your JVM Mastery Path</h2>
+  <p>Where to focus based on your current level</p>
+</div>
+
+<div class="mastery-grid reveal">
+  <div class="mastery-card m-beginner">
+    <div class="m-level">Beginner</div>
+    <div class="m-icon">🌱</div>
+    <div class="m-skills">JVM vs JRE vs JDK<br>Bytecode & WORA<br>Heap vs Stack<br>What GC does<br>-Xmx meaning</div>
+  </div>
+  <div class="mastery-card m-intermediate">
+    <div class="m-level">Intermediate</div>
+    <div class="m-icon">📈</div>
+    <div class="m-skills">Class loading lifecycle<br>G1 vs ZGC tradeoffs<br>Thread states<br>Reading GC logs<br>Java 8–17 features</div>
+  </div>
+  <div class="mastery-card m-advanced">
+    <div class="m-level">Advanced</div>
+    <div class="m-icon">⚡</div>
+    <div class="m-skills">JIT C1/C2 tiers<br>Heap dump analysis<br>Production tuning flags<br>Thread dump diagnosis<br>Deadlock resolution</div>
+  </div>
+  <div class="mastery-card m-pro">
+    <div class="m-level">Pro</div>
+    <div class="m-icon">🚀</div>
+    <div class="m-skills">JFR profiling<br>Virtual threads<br>Custom classloaders<br>ZGC internals<br>3 AM incident response</div>
+  </div>
+</div>
+
+<p style="text-align:center;color:#64748b;font-size:0.85rem;margin-top:32px;padding-top:24px;border-top:1px solid #e2e8f0;">
+  Written by <strong>Sathiyaraj Venkatachalapathy</strong> — Lead Java Developer & Associate Architect with 12+ years in enterprise Java systems.<br>
+  Questions or thoughts? Connect on <a href="https://www.linkedin.com/in/sathiyaraj-venkatachalapathy-706569188/" target="_blank">LinkedIn</a>
+</p>
+
+</div><!-- end .jvm-article -->
+
+<script>
+// ── Scroll Reveal ──
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+}, {threshold:0.1});
+reveals.forEach(r => obs.observe(r));
+
+// ── Memory Allocation Demo ──
+let edenObjs = [], gcCycle = 0;
+const colors = ['#6366f1','#8b5cf6','#06b6d4','#f59e0b','#6366f1'];
+
+function allocateObjects() {
+  const svg = document.getElementById('mem-svg');
+  const eden = document.getElementById('eden-objects');
+  const status = document.getElementById('gc-status');
+  const count = edenObjs.length;
+  if(count >= 12) { status.textContent = '⚠️ Eden is full — run Minor GC!'; return; }
+  const row = Math.floor(count / 6), col = count % 6;
+  const x = 18 + col * 44, y = 45 + row * 44;
+  const g = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  g.setAttribute('x', x); g.setAttribute('y', y);
+  g.setAttribute('width', 36); g.setAttribute('height', 28);
+  g.setAttribute('rx', 5);
+  const alive = Math.random() > 0.4;
+  g.setAttribute('fill', alive ? colors[col % colors.length] : '#ef4444');
+  g.style.animation = 'objAppear .3s ease-out';
+  g.dataset.alive = alive;
+  eden.appendChild(g);
+  edenObjs.push(g);
+  status.textContent = `Eden: ${edenObjs.length}/12 objects (${edenObjs.filter(o=>o.dataset.alive==='true').length} live, ${edenObjs.filter(o=>o.dataset.alive==='false').length} dead)`;
+}
+
+function runMinorGC() {
+  const eden = document.getElementById('eden-objects');
+  const survivor = document.getElementById('s0-objects');
+  const status = document.getElementById('gc-status');
+  if(edenObjs.length === 0) { status.textContent = 'No objects to collect. Allocate some first.'; return; }
+  const live = edenObjs.filter(o => o.dataset.alive === 'true');
+  const dead = edenObjs.filter(o => o.dataset.alive === 'false');
+  dead.forEach(o => { o.style.transition = 'opacity .4s'; o.style.opacity = '0'; setTimeout(() => o.remove(), 400); });
+  // Move live to survivor
+  live.forEach((o, i) => {
+    setTimeout(() => {
+      o.setAttribute('x', 310 + (i % 2) * 46);
+      o.setAttribute('y', 45 + Math.floor(i / 2) * 40);
+      o.setAttribute('fill', '#8b5cf6');
+      survivor.appendChild(o);
+    }, 500);
+  });
+  edenObjs = [];
+  status.textContent = `✅ Minor GC done — ${dead.length} objects collected, ${live.length} copied to Survivor`;
+}
+
+function promoteObjects() {
+  const survivor = document.getElementById('s0-objects');
+  const old = document.getElementById('old-objects');
+  const status = document.getElementById('gc-status');
+  const kids = [...survivor.children];
+  if(kids.length === 0) { status.textContent = 'No survivor objects. Run Minor GC first.'; return; }
+  kids.forEach((o, i) => {
+    setTimeout(() => {
+      o.setAttribute('x', 450 + (i % 4) * 46);
+      o.setAttribute('y', 50 + Math.floor(i / 4) * 40);
+      o.setAttribute('fill', '#10b981');
+      old.appendChild(o);
+    }, i * 150);
+  });
+  status.textContent = `↑ ${kids.length} objects promoted to Old Generation (survived 15+ GC cycles)`;
+}
+
+// ── GC Animation ──
+let gcStep = 0;
+const statusEl = document.getElementById('gc-anim-status');
+const deadIds = ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10'];
+const liveIds = ['l1','l2','l3'];
+
+function animateGC() {
+  gcStep = (gcStep % 4) + 1;
+  if(gcStep === 1) {
+    // Reset
+    [...deadIds, ...liveIds].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) { el.style.opacity = '1'; el.style.transition = ''; }
+    });
+    // Move survivors back
+    document.getElementById('l1').setAttribute('x', 112);
+    document.getElementById('l2').setAttribute('x', 142);
+    document.getElementById('l3').setAttribute('x', 112);
+    document.getElementById('l1').setAttribute('y', 48);
+    document.getElementById('l2').setAttribute('y', 48);
+    document.getElementById('l3').setAttribute('y', 80);
+    statusEl.textContent = 'Step 1: Eden is full — GC triggered. Red = dead objects (no references)';
+  } else if(gcStep === 2) {
+    statusEl.textContent = 'Step 2: Marking — JVM identifies which objects are still reachable...';
+    deadIds.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) { el.style.transition = 'all .5s'; el.style.opacity = '0.25'; }
+    });
+    liveIds.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) { el.style.filter = 'drop-shadow(0 0 4px #6366f1)'; }
+    });
+  } else if(gcStep === 3) {
+    statusEl.textContent = 'Step 3: Sweeping — dead objects removed, Eden freed (fast — most are garbage!)';
+    deadIds.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) { el.style.transition = 'all .4s'; el.style.opacity = '0'; }
+    });
+  } else if(gcStep === 4) {
+    statusEl.textContent = 'Step 4: Live objects copied to Survivor space — Eden is empty and ready ✅';
+    ['l1','l2','l3'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      if(el) {
+        el.style.transition = 'all .6s ease';
+        el.setAttribute('x', 312 + i * 32);
+        el.setAttribute('y', 58);
+        el.style.filter = '';
+      }
+    });
+  }
+}
+</script>
