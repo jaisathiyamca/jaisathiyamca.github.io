@@ -3,7 +3,7 @@ layout: default
 title: Resume
 ---
 
-# Sathiyaraj V
+# Sathiyaraj Venkatachalapathy
 **Lead Java Developer**
 
 📧 srisathiyamca@gmail.com &nbsp;·&nbsp; 📞 +91 9715671645
