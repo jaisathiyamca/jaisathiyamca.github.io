@@ -71,7 +71,7 @@ excerpt: "A story-driven, production-tested guide to understanding the JVM — f
 <div class="story-box">
   <div class="story-label">🕐 3:14 AM — Production Alert</div>
   <p>It's 3:14 AM. Your phone buzzes. The monitoring dashboard is red. Your Spring Boot service — the one handling 50,000 requests per minute for an automotive platform — is throwing <code>OutOfMemoryError: Java heap space</code> and crashing every 20 minutes. Users are getting 503s. Your team lead is on the call. You've got one hour to fix it without a full rollback.</p>
-  <p style="margin-top:8px;">This isn't hypothetical. This happened to our team at Renault Nissan. And the reason we could fix it in 47 minutes — not hours — was because we understood the JVM deeply enough to read a heap dump, spot the leak, and push a targeted fix. This article is everything we wish we had read before that night.</p>
+  <p style="margin-top:8px;">This isn't hypothetical. This happened to our team in a large-scale automotive platform. And the reason we could fix it in 47 minutes — not hours — was because we understood the JVM deeply enough to read a heap dump, spot the leak, and push a targeted fix. This article is everything we wish we had read before that night.</p>
 </div>
 
 <div class="toc">
@@ -130,7 +130,7 @@ This gives you **Write Once, Run Anywhere (WORA)** — the same JAR runs on Linu
 
 <div class="prod-box">
   <div class="prod-label">🏭 Production Reality</div>
-  <p>In Docker-based deployments (like our Kubernetes pods at Renault Nissan), we ship the JRE — not the full JDK — to keep image sizes small. But when a production incident happens and you need <code>jstack</code>, <code>jmap</code>, or <code>jfr</code>, those tools are in the JDK. This is why we run a debug sidecar with JDK tools attached to the same pod namespace — so we can diagnose without redeploying. Always have a plan for production diagnostics.</p>
+  <p>In Docker-based deployments (like our Kubernetes pods at a global automotive platform), we ship the JRE — not the full JDK — to keep image sizes small. But when a production incident happens and you need <code>jstack</code>, <code>jmap</code>, or <code>jfr</code>, those tools are in the JDK. This is why we run a debug sidecar with JDK tools attached to the same pod namespace — so we can diagnose without redeploying. Always have a plan for production diagnostics.</p>
 </div>
 
 ---
@@ -291,7 +291,7 @@ Result: Java code in steady state is often as fast as C++
 
 <div class="prod-box">
   <div class="prod-label">🏭 Production Use Case — JIT Warm-up in Kubernetes</div>
-  <p>In our Renault Nissan microservices, we noticed that the first batch of requests after a pod restart were 3–5x slower. This was JIT at work — the interpreter was running cold code. Our fix: added a <code>/actuator/warmup</code> endpoint that fires synthetic requests through critical code paths on startup. We call it from the Kubernetes <code>postStart</code> lifecycle hook before the pod joins the load balancer. Result: first real user request gets the same performance as the 10,000th.</p>
+  <p>In our our microservices, we noticed that the first batch of requests after a pod restart were 3–5x slower. This was JIT at work — the interpreter was running cold code. Our fix: added a <code>/actuator/warmup</code> endpoint that fires synthetic requests through critical code paths on startup. We call it from the Kubernetes <code>postStart</code> lifecycle hook before the pod joins the load balancer. Result: first real user request gets the same performance as the 10,000th.</p>
 </div>
 
 ---
@@ -304,7 +304,7 @@ Result: Java code in steady state is often as fast as C++
 
 <div class="story-box">
   <div class="story-label">📖 The 3:14 AM Story Continues</div>
-  <p>Back to that Renault Nissan incident. When the <code>OutOfMemoryError</code> hit, the first question was: is this a GC problem or a leak? We ran <code>jstat -gcutil &lt;pid&gt; 1000</code> and watched Old Gen fill up from 40% to 100% over 20 minutes with GC unable to free it. That told us: something was holding references — objects were surviving GC because live references to them existed. That's not a GC problem. That's a memory leak. Different diagnosis, different fix.</p>
+  <p>Back to that the production incident. When the <code>OutOfMemoryError</code> hit, the first question was: is this a GC problem or a leak? We ran <code>jstat -gcutil &lt;pid&gt; 1000</code> and watched Old Gen fill up from 40% to 100% over 20 minutes with GC unable to free it. That told us: something was holding references — objects were surviving GC because live references to them existed. That's not a GC problem. That's a memory leak. Different diagnosis, different fix.</p>
 </div>
 
 ### The Generational Hypothesis — Why GC Is Designed This Way
@@ -384,7 +384,7 @@ Objects in S0/S1 that survived 15 cycles move to Old Generation
 
 <div class="prod-box">
   <div class="prod-label">🏭 Production Use Case — Switching from G1 to ZGC</div>
-  <p>Our vehicle validation API (OneVAL) had a strict 200ms p99 SLA. With G1, we were seeing occasional 180–220ms GC pauses that violated the SLA 3–5 times per hour. We switched to ZGC on Java 17. GC pauses dropped to 2–4ms. p99 latency dropped from 195ms to 140ms. The tradeoff: CPU usage went up ~8% due to concurrent GC work. For a latency-critical service, completely worth it.</p>
+  <p>Our vehicle validation API (the vehicle validation platform) had a strict 200ms p99 SLA. With G1, we were seeing occasional 180–220ms GC pauses that violated the SLA 3–5 times per hour. We switched to ZGC on Java 17. GC pauses dropped to 2–4ms. p99 latency dropped from 195ms to 140ms. The tradeoff: CPU usage went up ~8% due to concurrent GC work. For a latency-critical service, completely worth it.</p>
 </div>
 
 ---
@@ -415,7 +415,7 @@ Objects in S0/S1 that survived 15 cycles move to Old Generation
     </ul>
     <div class="story-box">
       <div class="story-label">💥 The PermGen Death — A Real Migration Story</div>
-      <p>Before Java 8, we had a fixed <code>-XX:MaxPermSize=256m</code>. Long-running apps that dynamically loaded classes (think application servers, hot-reload scenarios, OSGi) would hit <code>OutOfMemoryError: PermGen space</code> and there was no good fix — just restart the server. Java 8 replaced PermGen with Metaspace, which lives in native memory and grows dynamically. We migrated a legacy app from Java 7 to Java 8 at CAMS, removed all PermGen flags, and those mysterious weekend restarts vanished.</p>
+      <p>Before Java 8, we had a fixed <code>-XX:MaxPermSize=256m</code>. Long-running apps that dynamically loaded classes (think application servers, hot-reload scenarios, OSGi) would hit <code>OutOfMemoryError: PermGen space</code> and there was no good fix — just restart the server. Java 8 replaced PermGen with Metaspace, which lives in native memory and grows dynamically. We migrated a legacy app from Java 7 to Java 8, removed all PermGen flags, and those mysterious weekend restarts vanished.</p>
     </div>
     <div class="code-snippet"><pre><span class="c">// Before Java 8 — verbose, hard to read</span>
 List&lt;String&gt; result = new ArrayList&lt;&gt;();
@@ -439,7 +439,7 @@ String email = user
     .orElse("unknown@domain.com");</pre></div>
     <div class="prod-box">
       <div class="prod-label">🏭 Production Impact</div>
-      <p>At CAMS, migrating reporting modules from Java 7 to Java 8 streams cut the code size by ~40% and made logic far easier to review in PRs. More importantly, Optional adoption across our service layer reduced NullPointerExceptions in production logs by over 60% within 3 months of the migration.</p>
+      <p>At a financial services company, migrating reporting modules from Java 7 to Java 8 streams cut the code size by ~40% and made logic far easier to review in PRs. More importantly, Optional adoption across our service layer reduced NullPointerExceptions in production logs by over 60% within 3 months of the migration.</p>
     </div>
   </div>
 </div>
@@ -515,7 +515,7 @@ HttpResponse&lt;String&gt; response = client.send(request,
 "ha".repeat(3);             <span class="c">// "hahaha"</span></pre></div>
     <div class="prod-box">
       <div class="prod-label">🏭 Production Use Case — JFR Saves the Day</div>
-      <p>On Java 11, Java Flight Recorder became free. This was a game-changer for us. JFR is a built-in, ultra-low-overhead profiler that records CPU, memory allocation, GC events, I/O, and lock contention — continuously, in production. When our PUCE service had intermittent latency spikes every few hours, we enabled JFR with a rolling 5-minute buffer. The next spike occurred, we dumped the buffer, loaded it in JDK Mission Control, and found the culprit in 10 minutes: a third-party library doing synchronised HTTP connection pool management. We wouldn't have found that with application-level metrics alone.</p>
+      <p>On Java 11, Java Flight Recorder became free. This was a game-changer for us. JFR is a built-in, ultra-low-overhead profiler that records CPU, memory allocation, GC events, I/O, and lock contention — continuously, in production. When our one of our services had intermittent latency spikes every few hours, we enabled JFR with a rolling 5-minute buffer. The next spike occurred, we dumped the buffer, loaded it in JDK Mission Control, and found the culprit in 10 minutes: a third-party library doing synchronised HTTP connection pool management. We wouldn't have found that with application-level metrics alone.</p>
     </div>
   </div>
 </div>
@@ -605,7 +605,7 @@ String action = <span class="k">switch</span> (result) {
 }; <span class="c">// No default needed — sealed class is exhaustive</span></pre></div>
     <div class="prod-box">
       <div class="prod-label">🏭 Production Use Case — Sealed Classes for State Machines</div>
-      <p>Our OneVAL vehicle validation platform has a complex lifecycle: SUBMITTED → IN_PROGRESS → BLOCKED → COMPLETED or REJECTED. Before Java 17, this was an enum plus instanceof checks scattered everywhere — and we'd regularly find a code path that forgot to handle BLOCKED state. With sealed classes, the compiler enforces exhaustiveness. We moved our validation state machine to sealed classes in Java 17 and eliminated an entire category of "unhandled state" bugs that had appeared in production 3 times in 18 months.</p>
+      <p>Our a vehicle validation platform has a complex lifecycle: SUBMITTED → IN_PROGRESS → BLOCKED → COMPLETED or REJECTED. Before Java 17, this was an enum plus instanceof checks scattered everywhere — and we'd regularly find a code path that forgot to handle BLOCKED state. With sealed classes, the compiler enforces exhaustiveness. We moved our validation state machine to sealed classes in Java 17 and eliminated an entire category of "unhandled state" bugs that had appeared in production 3 times in 18 months.</p>
     </div>
   </div>
 </div>
@@ -686,7 +686,7 @@ String summary = <span class="k">switch</span> (result) {
         id + " pending: " + reason;
 };</pre></div>
     <div class="prod-box">
-      <div class="prod-label">🏭 Production Use Case — Virtual Threads on the OneVAL API</div>
+      <div class="prod-label">🏭 Production Use Case — Virtual Threads on the the vehicle validation API</div>
       <p>Our vehicle validation API handles requests that each make 3–5 downstream calls: database lookup, rules engine API, certificate service, audit log write. Each request blocked a thread for ~80ms total wait time. With a fixed thread pool of 200, we could handle ~2,500 requests/second before queuing. After upgrading to Java 21 and enabling virtual threads in Spring Boot, we ran load tests: the same server handled 18,000 requests/second with the same 80ms latency per request. No reactive programming. No callback hell. Just <code>spring.threads.virtual.enabled=true</code> and simple blocking code.</p>
     </div>
   </div>
@@ -734,7 +734,7 @@ String summary = <span class="k">switch</span> (result) {
 -Djava.security.egd=file:/dev/./urandom   # Faster SecureRandom on Linux
 </pre></div>
 
-### Our Production JVM Config at Renault Nissan
+### Production JVM Config — Real-world Setup
 
 <div class="diagram-wrap"><pre>
 # Spring Boot microservice on GKE — Java 17, ZGC
@@ -762,7 +762,7 @@ java \
 
 <div class="story-box">
   <div class="story-label">🧊 The Frozen Service</div>
-  <p>Our VESPA diagnostic service stopped responding every few days. Memory was fine. CPU was near zero. But requests just... hung. No errors. No timeouts. A thread dump showed exactly what was happening in 30 seconds: two threads each holding a lock and waiting for the other. Classic deadlock. Without the thread dump, we'd have been guessing for hours.</p>
+  <p>Our a microservice stopped responding every few days. Memory was fine. CPU was near zero. But requests just... hung. No errors. No timeouts. A thread dump showed exactly what was happening in 30 seconds: two threads each holding a lock and waiting for the other. Classic deadlock. Without the thread dump, we'd have been guessing for hours.</p>
 </div>
 
 Generate a thread dump:
@@ -806,8 +806,8 @@ Dead Lock Pattern to spot:
 </pre></div>
 
 <div class="prod-box">
-  <div class="prod-label">🏭 Production Fix — The VESPA Deadlock</div>
-  <p>The deadlock in our VESPA service was caused by two methods: <code>updateDiagnosticStatus()</code> acquired lock A then lock B. <code>archiveDiagnosticRecord()</code> acquired lock B then lock A. When they ran concurrently, each got one lock and waited for the other. Fix: always acquire locks in the same order. We refactored both methods to use a single coarser lock on the diagnostic record ID. Deadlock eliminated. Lesson: <code>java.util.concurrent</code> classes (ConcurrentHashMap, ReentrantLock with tryLock) are almost always better than raw <code>synchronized</code>.</p>
+  <div class="prod-label">🏭 Production Fix — The Deadlock — Diagnosed in 30 Seconds</div>
+  <p>The deadlock in our the service was caused by two methods: <code>updateDiagnosticStatus()</code> acquired lock A then lock B. <code>archiveDiagnosticRecord()</code> acquired lock B then lock A. When they ran concurrently, each got one lock and waited for the other. Fix: always acquire locks in the same order. We refactored both methods to use a single coarser lock on the diagnostic record ID. Deadlock eliminated. Lesson: <code>java.util.concurrent</code> classes (ConcurrentHashMap, ReentrantLock with tryLock) are almost always better than raw <code>synchronized</code>.</p>
 </div>
 
 ---
@@ -861,7 +861,7 @@ Dead Lock Pattern to spot:
 ### The 3:14 AM Fix — What We Actually Did
 
 <div class="prod-box">
-  <div class="prod-label">🏭 The Full Renault Nissan Incident — From Alert to Fix</div>
+  <div class="prod-label">🏭 The Full Incident — From Alert to Fix — From Alert to Fix</div>
   <p><strong>Step 1 (T+0min):</strong> OOM alert fires. We add <code>-XX:+HeapDumpOnOutOfMemoryError</code> to the next restart and trigger a heap dump manually on the surviving pod using <code>jcmd 1 GC.heap_dump /tmp/heap.hprof</code>.</p>
   <p style="margin-top:8px;"><strong>Step 2 (T+8min):</strong> Download the 1.2GB heap dump. Open in Eclipse Memory Analyzer (MAT). Run "Leak Suspects Report". MAT immediately flags: one instance of <code>LinkedHashMap</code> holding 847MB — 71% of the heap.</p>
   <p style="margin-top:8px;"><strong>Step 3 (T+14min):</strong> Trace the reference chain. The map is a field in <code>ValidationRuleCache</code>. It's an LRU cache we added 3 weeks ago. But the eviction policy was set to 10,000 entries with no TTL. The rules cache was accumulating vehicle IDs as keys — unboundedly — because each unique vehicleId got its own cache entry.</p>
@@ -968,7 +968,7 @@ The JVM is 30 years of engineering. Every feature — GC generations, JIT tiers,
 
 ---
 
-*Written by Sathiyaraj Venkatachalapathy — Lead Java Developer & Associate Architect at Renault Nissan Technology Business Center India. The production incidents and solutions described here are from real systems.*
+*Written by Sathiyaraj Venkatachalapathy — Lead Java Developer & Associate Architect at a large-scale automotive tech company. The production incidents and solutions described here are from real systems.*
 
 *Questions? Found something worth discussing? Connect on [LinkedIn](https://www.linkedin.com/in/sathiyaraj-venkatachalapathy-706569188/).*
 
