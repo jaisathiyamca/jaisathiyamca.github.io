@@ -3665,4 +3665,375 @@ autoencoder.summary()
       }
     ]
   }
+
+  ,
+  {
+    id: "nlp-text-processing",
+    courseType: "NLP",
+    title: "1. Text Processing & Tokenization",
+    overview: "How AI reads human language by chopping paragraphs into tiny, understandable tokens (words or syllables).<br><br><b>Analogy:</b> Imagine breaking a Lego castle into individual bricks so you can understand what it's made of.",
+    coreConcept: `
+      Natural Language Processing (NLP) models cannot read English directly. 
+      They must convert words into numbers. The first step is <b>Tokenization</b>—splitting text into tokens.
+      Then, we apply techniques like <b>Stemming</b> (chopping off word endings) or <b>Lemmatization</b> (finding the dictionary root word).
+      <div style="margin-top:20px;" class="univ-sandbox-container">
+        <div class="univ-sandbox-header">NLP Tokenization Sandbox</div>
+        <div class="univ-nlp-container">
+          <input type="text" class="univ-nlp-input" value="The quick brown foxes jump!" disabled>
+          <div class="univ-nlp-tokens">
+            <span class="univ-nlp-token" style="animation-delay: 0.1s">The <span class="univ-nlp-vector">[01]</span></span>
+            <span class="univ-nlp-token" style="animation-delay: 0.3s">quick <span class="univ-nlp-vector">[89]</span></span>
+            <span class="univ-nlp-token" style="animation-delay: 0.5s">brown <span class="univ-nlp-vector">[45]</span></span>
+            <span class="univ-nlp-token" style="animation-delay: 0.7s">fox <span class="univ-nlp-vector">[root]</span></span>
+            <span class="univ-nlp-token" style="animation-delay: 0.9s">jump <span class="univ-nlp-vector">[root]</span></span>
+          </div>
+        </div>
+      </div>
+    `,
+    realTimeExamples: [
+      { subTopic: "Spam Filters", description: "Finding keyword patterns", scenario: "Gmail detecting 'Buy Now' or 'Free'", industry: "Cybersecurity" },
+      { subTopic: "Sentiment Analysis", description: "Judging emotion", scenario: "Twitter tracking if product reviews are angry or happy", industry: "Marketing" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Bag of Words (BoW) Matrix</h4>
+        <p>Sentence 1: "I love cats" = [1, 1, 1, 0]<br>Sentence 2: "I love dogs" = [1, 1, 0, 1]</p>
+        <p>The matrix simply counts the frequency of words!</p>
+      </div>
+    `,
+    code: `
+import nltk # Natural Language Toolkit
+from nltk.tokenize import word_tokenize # Function to split sentences into words
+
+# A sample text string from a user
+text = "AI is revolutionizing the world!"
+
+# Tokenize the text: chops it into a list of individual words and punctuation
+tokens = word_tokenize(text)
+
+# Print the resulting list of tokens
+print(tokens) # Output: ['AI', 'is', 'revolutionizing', 'the', 'world', '!']
+    `,
+    memoryTricks: "<b>Token</b> = A single Ticket. The AI needs a ticket for every single word to enter the brain.",
+    recap: "NLP starts by breaking messy human text into clean, mathematical tokens."
+  },
+  {
+    id: "nlp-word-embeddings",
+    courseType: "NLP",
+    title: "2. Word Embeddings (Word2Vec)",
+    overview: "Mapping words into a 3D mathematical space where similar words cluster together.<br><br><b>Analogy:</b> Imagine a huge galaxy where the 'King' star and 'Queen' star are right next to each other, but the 'Apple' star is a million lightyears away.",
+    coreConcept: `
+      Word embeddings capture the <b>meaning</b> of words. 
+      Instead of just assigning a random ID to a word, we assign it an array of numbers (a vector) that represent its coordinates in space.
+      If two words often appear in the same sentences (like 'dog' and 'puppy'), their mathematical coordinates will be very close together!
+      <br><br>Famous Equation: <code>King - Man + Woman = Queen</code>
+    `,
+    realTimeExamples: [
+      { subTopic: "Search Engines", description: "Semantic Search", scenario: "Googling 'sneakers' also shows 'running shoes'", industry: "E-Commerce" },
+      { subTopic: "Recommendation", description: "Content clustering", scenario: "Netflix recommending movies with similar plot descriptions", industry: "Entertainment" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Vector Similarity (Cosine Similarity)</h4>
+        <p>How do we know if two words are similar? We measure the angle between their vectors!</p>
+        <p>Angle of 0° = Exact same meaning.<br>Angle of 90° = Totally unrelated.</p>
+      </div>
+    `,
+    code: `
+import gensim.downloader as api # Import the Gensim library to load pre-trained embeddings
+
+# Load a massive Google Word2Vec model (trained on Google News)
+# Warning: This downloads a very large file!
+model = api.load("word2vec-google-news-300")
+
+# Ask the model: "What words are mathematically closest to 'puppy'?"
+similar_words = model.most_similar("puppy")
+
+# Print the list of similar words (e.g., 'dog', 'pup', 'kitten')
+print(similar_words)
+    `,
+    memoryTricks: "<b>Embeddings</b> = Embedding a word onto a map. Close map points = similar meanings.",
+    recap: "Embeddings turn words into mathematical coordinates so computers can understand context and meaning."
+  },
+  {
+    id: "nlp-transformers",
+    courseType: "NLP",
+    title: "3. The Transformer Architecture",
+    overview: "The revolutionary AI architecture that powers ChatGPT, able to read entire sentences all at once using 'Self-Attention'.<br><br><b>Analogy:</b> Instead of reading a book word-by-word like a human, a Transformer looks at the entire page simultaneously and instantly figures out how every word connects to every other word.",
+    coreConcept: `
+      Before 2017, AI read text sequentially (one word at a time using RNNs). 
+      Google invented the <b>Transformer</b>, which introduced the <b>Attention Mechanism</b>.
+      When predicting a word, Attention allows the model to "focus" on the most important words in the surrounding sentence, regardless of how far apart they are.
+    `,
+    realTimeExamples: [
+      { subTopic: "Large Language Models", description: "ChatGPT / Gemini", scenario: "Answering complex questions with perfect grammar", industry: "Every Industry" },
+      { subTopic: "Real-time Translation", description: "DeepL / Google Translate", scenario: "Translating full paragraphs without losing the gender or tense context", industry: "Global Communications" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Attention = Softmax(Q * K.T / sqrt(d)) * V</h4>
+        <p>The mathematical heart of modern AI. It compares Queries (what I'm looking for) with Keys (what other words offer) to extract Values (the meaning).</p>
+      </div>
+    `,
+    code: `
+from transformers import pipeline # Import Hugging Face's ultra-easy pipeline
+
+# Instantiate a pre-trained Transformer model specifically for Sentiment Analysis
+# This downloads a tiny BERT-based model automatically
+classifier = pipeline('sentiment-analysis')
+
+# Ask the Transformer to analyze a sentence
+result = classifier('I absolutely loved the new Batman movie, the cinematography was stunning!')
+
+# Print the output (e.g., [{'label': 'POSITIVE', 'score': 0.99}])
+print(result)
+    `,
+    memoryTricks: "<b>Attention</b> = Just like you pay 'Attention' to specific keywords when skimming an article, the AI assigns attention weights to important words.",
+    recap: "Transformers process language in parallel using Self-Attention, making them incredibly fast and the backbone of modern Generative AI."
+  },
+  {
+    id: "cv-image-processing",
+    courseType: "CV",
+    title: "1. Image Processing & Filters",
+    overview: "Using math to manipulate pixels to detect edges, blur backgrounds, or enhance colors.<br><br><b>Analogy:</b> Instagram filters on steroids. We slide a mathematical magnifying glass over an image to change how it looks.",
+    coreConcept: `
+      Images to a computer are just massive 2D grids of numbers (0-255).
+      <b>Convolution</b> is the process of sliding a small grid of numbers (called a Kernel or Filter) over the image. 
+      If we use an Edge Detection kernel, we multiply the pixels to highlight sharp changes in color (which represent physical edges of objects).
+      <div style="margin-top:20px;" class="univ-sandbox-container">
+        <div class="univ-sandbox-header">Convolution Sandbox</div>
+        <div class="univ-cv-canvas">
+          <div class="univ-cv-filter" style="animation: slideFilter 4s infinite linear;"></div>
+          <!-- 100 pixels generated by CSS grid -->
+          ${Array(100).fill('<div class="univ-cv-pixel" onmouseover="this.classList.toggle(\'active\')"></div>').join('')}
+        </div>
+        <style>
+          @keyframes slideFilter {
+            0% { top: 0; left: 0; }
+            25% { top: 0; left: 140px; }
+            50% { top: 140px; left: 140px; }
+            75% { top: 140px; left: 0; }
+            100% { top: 0; left: 0; }
+          }
+        </style>
+      </div>
+    `,
+    realTimeExamples: [
+      { subTopic: "Medical Imaging", description: "Enhancing X-Rays", scenario: "Applying contrast filters to highlight tumors in MRI scans", industry: "Healthcare" },
+      { subTopic: "Self-Driving Cars", description: "Lane detection", scenario: "Using edge-detection to find the white lines on the road", industry: "Automotive" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Sobel Edge Detection</h4>
+        <p>A matrix of [-1, 0, 1] detects vertical lines by subtracting the left pixel from the right pixel. If the colors are identical, the result is 0 (pitch black). If there's a sharp contrast, the result is high (bright white edge!).</p>
+      </div>
+    `,
+    code: `
+import cv2 # Import OpenCV, the standard library for Computer Vision
+import matplotlib.pyplot as plt # Import plotting library to show the image
+
+# 1. Read an image from the computer (assuming 'cat.jpg' exists)
+image = cv2.imread('cat.jpg')
+
+# 2. Convert the image from BGR (Blue-Green-Red) to Grayscale (Black & White)
+# Grayscale is easier to process because it's only 1 channel instead of 3
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# 3. Apply the Canny Edge Detection algorithm!
+# Any pixel gradient between 100 and 200 is considered a solid 'edge'
+edges = cv2.Canny(gray_image, 100, 200)
+
+# Display the resulting neon-like edges
+plt.imshow(edges, cmap='gray')
+plt.show()
+    `,
+    memoryTricks: "<b>Kernel</b> = A popcorn kernel hopping across the image, popping out new pixel colors.",
+    recap: "Image processing uses math (kernels) to manipulate pixel arrays, serving as the foundational step before feeding images into Deep Learning."
+  },
+  {
+    id: "cv-object-detection",
+    courseType: "CV",
+    title: "2. Object Detection (YOLO)",
+    overview: "Teaching AI not just 'what' is in the image, but 'where' it is by drawing bounding boxes.<br><br><b>Analogy:</b> Playing 'Where's Waldo?', but the AI can instantly point to Waldo, a dog, and a bicycle all in 10 milliseconds.",
+    coreConcept: `
+      Image Classification just says "This is a dog picture."
+      <b>Object Detection</b> finds the exact X and Y coordinates of the dog and draws a box around it.
+      Modern algorithms like <b>YOLO (You Only Look Once)</b> split the image into a grid and predict bounding boxes for every grid cell simultaneously, making it fast enough for real-time video!
+    `,
+    realTimeExamples: [
+      { subTopic: "Retail Security", description: "Shoplifting detection", scenario: "Tracking customers' hands crossing shelf boundaries in Amazon Go stores", industry: "Retail" },
+      { subTopic: "Traffic Cameras", description: "Smart Cities", scenario: "Counting the number of cars vs buses at an intersection", industry: "Urban Planning" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Intersection over Union (IoU)</h4>
+        <p>How do we score the AI's bounding box? We divide the Area of Overlap (between the AI's box and the true box) by the Area of Union. A score of 1.0 means perfect alignment!</p>
+      </div>
+    `,
+    code: `
+# Import the ultralytics library, which contains the YOLOv8 models
+from ultralytics import YOLO
+
+# 1. Load a pre-trained YOLOv8 Nano model (super lightweight and fast)
+model = YOLO('yolov8n.pt') 
+
+# 2. Ask the model to analyze an image ('street.jpg')
+# It will automatically find all cars, people, traffic lights, etc.
+results = model('street.jpg')
+
+# 3. For every single bounding box it found in the first image...
+for box in results[0].boxes:
+    # Print the confidence score (e.g., 0.95 = 95% sure it's a person)
+    print("Confidence:", box.conf)
+    # Print the coordinates of the box [x_min, y_min, x_max, y_max]
+    print("Coordinates:", box.xyxy)
+
+# Automatically show the image with the beautiful boxes drawn on it!
+results[0].show()
+    `,
+    memoryTricks: "<b>YOLO</b> = You Only Look Once. Unlike older models that scanned images 100 times, YOLO does the math in a single sweep.",
+    recap: "Object detection locates multiple items in an image using bounding boxes, powered by blazing-fast algorithms like YOLO."
+  },
+  {
+    id: "genai-gans",
+    courseType: "GENAI",
+    title: "1. Generative Adversarial Networks (GANs)",
+    overview: "Two AI networks battling each other: one tries to forge fake images, and the other plays the detective trying to catch the fakes.<br><br><b>Analogy:</b> An Art Forger (Generator) trying to paint fake Monas Lisas, and a Police Detective (Discriminator) trying to spot the fakes. They both get better over time until the forgeries are flawless.",
+    coreConcept: `
+      A GAN is composed of two Neural Networks competing:
+      <ol>
+        <li><b>The Generator:</b> Starts with pure random noise and tries to mathematically craft an image (e.g., a human face).</li>
+        <li><b>The Discriminator:</b> Looks at real human faces and the Generator's fake faces, and guesses which is which.</li>
+      </ol>
+      As they battle, the Generator learns to create hyper-realistic images that completely fool the Discriminator. This is how Deepfakes were born.
+    `,
+    realTimeExamples: [
+      { subTopic: "Deepfakes", description: "Face swapping", scenario: "De-aging actors in Hollywood movies", industry: "Film" },
+      { subTopic: "Video Game Assets", description: "Texture generation", scenario: "Generating infinite realistic landscapes and alien textures", industry: "Gaming" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Minimax Loss Game</h4>
+        <p>The Generator tries to MINIMIZE the Discriminator's accuracy, while the Discriminator tries to MAXIMIZE its own accuracy. It is a mathematical tug-of-war!</p>
+      </div>
+    `,
+    code: `
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LeakyReLU
+
+# 1. Build the FORGER (Generator)
+generator = Sequential([
+    # Takes in 100 random numbers (noise)
+    Dense(128, input_shape=(100,)), 
+    LeakyReLU(alpha=0.2), # Special activation function
+    # Outputs 784 pixels (a 28x28 image)
+    Dense(784, activation='tanh') 
+])
+
+# 2. Build the DETECTIVE (Discriminator)
+discriminator = Sequential([
+    # Takes in 784 pixels (the generated image or a real image)
+    Dense(128, input_shape=(784,)),
+    LeakyReLU(alpha=0.2),
+    # Outputs exactly 1 number: Probability of being FAKE (0) or REAL (1)
+    Dense(1, activation='sigmoid') 
+])
+
+# Print the architectures
+generator.summary()
+discriminator.summary()
+    `,
+    memoryTricks: "<b>Adversarial</b> = Adversaries or Enemies fighting. The networks learn by fighting each other.",
+    recap: "GANs pit two neural networks against each other to generate hyper-realistic synthetic data, from faces to voices."
+  },
+  {
+    id: "genai-diffusion",
+    courseType: "GENAI",
+    title: "2. Diffusion Models (Midjourney / DALL-E)",
+    overview: "The magic behind modern AI art. It destroys images by adding TV static, then learns to reverse the process to sculpt masterpieces out of pure static.<br><br><b>Analogy:</b> Imagine dropping a drop of ink in water and watching it diffuse. Now imagine an AI so smart it can watch the cloudy water and perfectly pull the ink back out into a drop.",
+    coreConcept: `
+      GANs are unstable. Today, we use <b>Diffusion</b>.
+      <b>Forward Process:</b> We take a beautiful image and slowly add mathematical noise (static) step-by-step until it is 100% pure noise.
+      <b>Reverse Process:</b> We train a U-Net neural network to remove the noise step-by-step. 
+      Once trained, we can give the AI pure random static, give it a text prompt like 'Astronaut on a horse', and it will 'denoise' the static into that exact picture!
+    `,
+    realTimeExamples: [
+      { subTopic: "Concept Art", description: "Midjourney / Stable Diffusion", scenario: "Architects generating futuristic building concepts in seconds", industry: "Design" },
+      { subTopic: "Marketing", description: "Ad generation", scenario: "Generating infinite product backgrounds without photoshoots", industry: "Advertising" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Markov Chain Noise</h4>
+        <p>In each step (t), the image x(t) is created by adding a tiny fraction of Gaussian noise to the previous image x(t-1).</p>
+      </div>
+    `,
+    code: `
+from diffusers import StableDiffusionPipeline # Import Hugging Face Diffusers library
+import torch # Import PyTorch, the engine running the model
+
+# 1. Download and load the massive Stable Diffusion model into memory
+# (Requires a very powerful GPU in reality!)
+pipe = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16)
+pipe = pipe.to("cuda") # Move the model to the Graphics Card
+
+# 2. Define the creative text prompt
+prompt = "A highly detailed cyberpunk city skyline at sunset, neon lights, 4k"
+
+# 3. Generate the image! The AI sculpts the image out of noise
+image = pipe(prompt).images[0]
+
+# 4. Save the generated masterpiece to your hard drive
+image.save("cyberpunk_city.png")
+    `,
+    memoryTricks: "<b>Diffusion</b> = Like mist diffusing. We add mist to a photo until it's gone, then learn to clear the mist.",
+    recap: "Diffusion models generate state-of-the-art images by learning to reverse the process of adding noise to pictures."
+  },
+  {
+    id: "genai-llms",
+    courseType: "GENAI",
+    title: "3. Large Language Models (LLMs)",
+    overview: "The ultimate autocorrect. Massive neural networks that have read the entire internet and simply predict the most logical next word.<br><br><b>Analogy:</b> An insanely smart smartphone autocomplete. If you type 'The sky is', it has read a trillion books and knows the next word should probably be 'blue'.",
+    coreConcept: `
+      Models like GPT-4 or Claude 3 are built on the Transformer architecture.
+      They are trained on massive datasets (Petabytes of text) with hundreds of billions of parameters (synapses).
+      Their only mathematical goal during training is <b>Next-Token Prediction</b>. 
+      Because they must perfectly predict the next word in Wikipedia articles, coding forums, and biology textbooks, they end up accidentally learning reasoning, logic, and coding!
+    `,
+    realTimeExamples: [
+      { subTopic: "Coding Assistants", description: "GitHub Copilot", scenario: "Writing an entire Python app based on a single comment", industry: "Software Engineering" },
+      { subTopic: "Customer Support", description: "AI Agents", scenario: "Resolving complex billing issues without human intervention", industry: "Customer Service" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Temperature</h4>
+        <p>A math variable controlling creativity. Temperature = 0 means the AI always picks the highest probability word (boring, factual). Temperature = 1.0 means it rolls the dice and picks slightly lower probability words (creative, hallucinations).</p>
+      </div>
+    `,
+    code: `
+import openai # Import the OpenAI API library
+import os
+
+# 1. Securely set your API key (your password to access the supercomputer)
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# 2. Send a request to the GPT-4 API
+response = openai.ChatCompletion.create(
+    model="gpt-4", # Specify the model version
+    messages=[
+        # Define the AI's persona
+        {"role": "system", "content": "You are a helpful programming tutor."},
+        # Define the user's actual prompt
+        {"role": "user", "content": "Explain what a variable is in 1 sentence."}
+    ],
+    temperature=0.7 # Set creativity to 70%
+)
+
+# 3. Extract and print the text from the massive JSON response object
+print("AI Says:", response.choices[0].message['content'])
+    `,
+    memoryTricks: "<b>LLM</b> = Large (Billions of parameters), Language (Reads text), Model (Mathematical brain).",
+    recap: "LLMs are massive next-word-prediction engines that have developed reasoning capabilities due to their sheer scale."
+  }
+
 ];
+
