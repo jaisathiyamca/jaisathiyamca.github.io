@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether ML Academy — Interactive ML, DL, and AI Portal</title>
+  <meta name="description" content="Aether ML Academy is an interactive, visual, and practical learning portal to master Machine Learning, Deep Learning, and Artificial Intelligence with browser sandboxes, simple math explanations, and job-ready Python code.">
+  <!-- Google Fonts for Ultra-Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <!-- Load Pyodide for Browser-based Python Execution -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+  <!-- Confetti & Animations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Mermaid.js for Visual Diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+<body class="dark-theme">
+  <!-- Glowing Interactive Background Blobs -->
+  <div class="blob-bg blob-1" aria-hidden="true"></div>
+  <div class="blob-bg blob-2" aria-hidden="true"></div>
+  <div class="blob-bg blob-3" aria-hidden="true"></div>
+
+  <!-- Scroll Progress Indicator (Accessible & Highly Performant) -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Main App Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span class="logo-text">Aether <span class="accent-text">ML</span></span>
+        </div>
+        <button class="mobile-close-btn" id="mobile-close-btn" aria-label="Close Sidebar">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div id="dynamic-sidebar-container">
+          <!-- Sidebar categories will be generated dynamically by app.js -->
+        </div>
+      </nav>
+
+      <!-- Sidebar Footer / User Profile Card -->
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="avatar">🎓</div>
+          <div class="user-info">
+            <div class="username">Future ML Engineer</div>
+            <div class="user-status">Skill: <span id="user-tier">Novice</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Navigation Bar -->
+      <header class="topbar">
+        <div class="left-section">
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open Sidebar">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="breadcrumbs" id="breadcrumbs">
+            <span class="breadcrumb-item active">Dashboard</span>
+          </div>
+        </div>
+
+        <div class="right-section">
+          <!-- Global Progress Circle Widget -->
+          <div class="progress-widget" id="progress-summary-btn" title="View overall progress">
+            <div class="progress-text">
+              <span class="progress-count" id="completed-count">0/10</span> Completed
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="global-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="display: none;">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Learning Portal Arena -->
+      <div class="learning-arena">
+        
+        <!-- Homepage Dashboard (Visible initially) -->
+        <section class="dashboard-view" id="dashboard-view">
+          <div class="welcome-card card">
+            <div class="welcome-text">
+              <span class="greeting-tag">🚀 Start Your Journey</span>
+              <h1>Welcome to the Future, AI Pioneer!</h1>
+              <p>Welcome to <strong>Aether ML Academy</strong>! We have designed an ultra-crispy, visual, and practical learning experience. No dry, boring academic books. Every topic has a real-world analogy, visual simulators, and practical coding exercises designed to get you **job-ready**!</p>
+              <button class="btn btn-primary btn-large" id="start-learning-btn">Start First Lesson</button>
+            </div>
+            <div class="welcome-visual">
+              <svg viewBox="0 0 200 200" width="160" height="160">
+                <circle cx="100" cy="100" r="80" stroke="rgba(79, 70, 229, 0.2)" stroke-width="8" fill="none"/>
+                <circle cx="100" cy="100" r="80" stroke="#4f46e5" stroke-dasharray="502" stroke-dashoffset="502" stroke-width="8" fill="none" id="dashboard-circle-progress" class="animated-circle"/>
+                <text x="100" y="95" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="28" font-weight="bold" fill="currentColor" id="dashboard-progress-pct">0%</text>
+                <text x="100" y="125" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" fill="var(--text-muted)">Mastered</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Unified Roadmap Section -->
+          <div class="roadmap-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3 class="section-title">🛣️ Your Learning Journeys</h3>
+              <div class="course-tabs" id="dynamic-roadmap-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px;">
+              <!-- Roadmap tabs will be generated dynamically by app.js -->
+              </div>
+            </div>
+            
+            <p class="section-subtitle" id="roadmap-subtitle">Complete these core milestones to build a solid developer profile.</p>
+            
+            <div id="dynamic-roadmap-container">
+              <!-- Roadmap grids will be generated dynamically by app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Active Tutorial View (Hidden initially, loaded dynamically) -->
+        <section class="tutorial-view" id="tutorial-view" style="display: none;">
+          
+          <div class="tutorial-split-layout">
+            <!-- LEFT PANEL: Theory, Images, Animations -->
+            <div class="theory-panel">
+              <!-- Tutorial Header -->
+              <div class="tutorial-header-card card">
+                <div class="tutorial-meta">
+                  <span class="difficulty-badge" id="tut-difficulty">Beginner</span>
+                  <span class="duration-tag">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="vertical-align: middle; margin-right: 4px;">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg><span id="tut-duration">10 mins</span> read
+                  </span>
+                </div>
+                <h2 id="tut-title">Linear Regression</h2>
+                <div class="job-pill-card">
+                  <span class="job-icon">💼</span>
+                  <div class="job-text">
+                    <strong>Job-Ready Focus:</strong> Recommended for <span id="tut-job-highlight">Data Analyst</span> roles.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Analogy Segment -->
+              <div id="tut-analogy-container"></div>
+
+              <!-- Core Explanation Segment -->
+              <div class="explanation-section card">
+                <div id="tut-concept-container"></div>
+              </div>
+
+              <!-- Math Simplified (Collapsible Drawer for high-school compatibility) -->
+              <details class="math-details card">
+                <summary class="math-summary">
+                  <div class="math-summary-title">
+                    <span>📐 The Mathematics Simplified (Optional Deep-Dive)</span>
+                    <span class="expand-arrow">▼</span>
+                  </div>
+                </summary>
+                <div class="math-content" id="tut-math-container">
+                  <!-- Math contents will be injected here -->
+                </div>
+              </details>
+
+              <!-- Job Interview Flashcard -->
+              <div class="interview-section card">
+                <div class="interview-header">
+                  <span class="interview-badge">💼 Pro Job Interview Question</span>
+                  <h4>How do they ask this in a real interview?</h4>
+                </div>
+                <div class="interview-body">
+                  <p class="interview-question" id="tut-interview-question"></p>
+                  <div class="interview-answer-box" id="interview-answer-box">
+                    <button class="btn btn-secondary" id="reveal-interview-btn">Reveal Interview Answer</button>
+                    <div class="interview-answer-text" id="tut-interview-answer" style="display: none;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dynamic Quiz Section -->
+              <div class="quiz-section card">
+                <div class="quiz-header">
+                  <span class="quiz-badge">🧠 Mastery Checkpoint</span>
+                  <h4>Test your understanding! Pass this quiz to complete the module.</h4>
+                </div>
+                <div class="quiz-body" id="quiz-container">
+                  <!-- Dynamic 3-Question Quiz populated by app.js -->
+                </div>
+                <div class="quiz-footer" style="display: none;" id="quiz-results-card">
+                  <div class="quiz-results-content">
+                    <div class="quiz-results-icon">🎉</div>
+                    <h5>Checkpoint Mastered!</h5>
+                    <p>Excellent! You answered all questions correctly and unlocked the next module.</p>
+                    <button class="btn btn-success" id="next-lesson-nav-btn">Proceed to Next Lesson</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT PANEL: Play Area (Simulator & Code Sandbox) -->
+            <div class="practice-panel">
+              <!-- Interactive Simulator Block -->
+              <div class="simulator-section card" id="simulator-wrapper">
+                <div class="simulator-header">
+                  <div class="sim-title">
+                    <span class="pulse-icon"></span>
+                    <h4>Interactive Visual Sandbox</h4>
+                  </div>
+                  <p class="sim-desc">Interact with this visual sandbox to understand the concept in real-time. Action breeds understanding!</p>
+                </div>
+                <div class="simulator-body" id="simulator-mount">
+                  <!-- Custom Simulators will be injected here by app.js -->
+                </div>
+              </div>
+
+              <!-- Live Python Playground -->
+              <div class="code-sandbox-section card" id="code-sandbox-wrapper">
+                <div class="code-header">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--color-primary)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+                    <span>Interactive Python Playground</span>
+                  </div>
+                  <button class="btn btn-primary run-code-btn" id="run-code-btn">Run Code</button>
+                </div>
+                <div class="editor-wrapper">
+                  <textarea id="tut-code-editor" class="code-editor-area" spellcheck="false" placeholder="Write your Python code here..."></textarea>
+                </div>
+                <div class="output-console">
+                  <div class="console-header">Terminal Output</div>
+                  <pre id="tut-console-output" class="console-output">Loading Pyodide Environment...</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- App Footer -->
+      <footer class="app-footer">
+        <p>&copy; 2026 Aether ML Academy. Built to inspire future engineers. All rights reserved.</p>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- Load Database and Script logic -->
+  <script src="tutorials.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
