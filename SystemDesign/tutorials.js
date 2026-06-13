@@ -4035,5 +4035,234 @@ print("AI Says:", response.choices[0].message['content'])
     recap: "LLMs are massive next-word-prediction engines that have developed reasoning capabilities due to their sheer scale."
   }
 
+
+  ,
+  {
+    id: "mlops-intro",
+    courseType: "MLOPS",
+    title: "1. Intro to MLOps & Pipelines",
+    overview: "Taking a Machine Learning model from your laptop and putting it on the internet so the entire world can use it.<br><br><b>Analogy:</b> Training a model is like inventing a new recipe in your home kitchen. MLOps is building a massive factory to mass-produce that recipe and ship it globally without the food going bad.",
+    coreConcept: `
+      Machine Learning Operations (MLOps) is the bridge between Data Science and Software Engineering.
+      A model on a laptop is useless. We must build a <b>Pipeline</b> that automatically ingests data, trains the model, tests it, and deploys it as an API (like a website URL).
+      Tools like MLflow track experiments, and FastAPI wraps the model in a web interface so other apps can send it data and get predictions.
+    `,
+    realTimeExamples: [
+      { subTopic: "Uber ETA Predictions", description: "Serving models at scale", scenario: "Millions of users querying a pricing model simultaneously", industry: "Transportation" },
+      { subTopic: "Model Versioning", description: "A/B Testing", scenario: "Testing V2 of a recommendation engine against V1 live", industry: "Tech" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Throughput & Latency</h4>
+        <p>In MLOps, math shifts from accuracy to engineering metrics. Latency (Response Time in ms) and Throughput (Predictions per second) determine server costs.</p>
+      </div>
+    `,
+    code: `
+# Using FastAPI to turn our trained model into a live web server!
+from fastapi import FastAPI
+import pickle # Used to load our saved model
+
+# Initialize the Web Server
+app = FastAPI()
+
+# Load our pre-trained model from the hard drive (e.g., a Random Forest)
+with open("my_model.pkl", "rb") as f:
+    model = pickle.load(f)
+
+# Define an API Endpoint (a URL route) that users can send data to
+@app.post("/predict")
+def make_prediction(age: int, income: float):
+    # The API receives the data, feeds it to the model, and returns the prediction!
+    prediction = model.predict([[age, income]])
+    
+    # Return the result as JSON to the user's browser or app
+    return {"predicted_value": int(prediction[0])}
+    `,
+    memoryTricks: "<b>MLOps</b> = ML (The Brain) + Ops (The Delivery Truck).",
+    recap: "MLOps ensures models don't die on laptops, providing the infrastructure to deploy, scale, and maintain them in production."
+  },
+  {
+    id: "mlops-docker",
+    courseType: "MLOPS",
+    title: "2. Docker & Containerization",
+    overview: "Packing your AI code, libraries, and operating system into a single indestructible digital shipping container.<br><br><b>Analogy:</b> Instead of sending your friend a cake recipe and hoping they have an oven, you put the fully baked cake and the oven inside a magic box and ship the whole box.",
+    coreConcept: `
+      "It works on my machine!" is the biggest problem in software.
+      <b>Docker</b> creates a <i>Container</i>. It wraps up your Python code, your exact version of Pandas/TensorFlow, and even the Linux operating system into one isolated package.
+      You can run this container on any computer in the world (AWS, Google Cloud, your laptop) and it is mathematically guaranteed to run exactly the same way.
+    `,
+    realTimeExamples: [
+      { subTopic: "Cloud Deployment", description: "AWS ECS", scenario: "Deploying an AI image generator to the cloud seamlessly", industry: "Cloud Computing" },
+      { subTopic: "Microservices", description: "Decoupled Architecture", scenario: "Separating the Database container from the AI Model container", industry: "Software Engineering" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Resource Allocation</h4>
+        <p>Containers allow fractional resource allocation. E.g., Assigning exactly 0.5 CPU cores and 512MB RAM to a specific model to minimize cloud costs.</p>
+      </div>
+    `,
+    code: `
+# This is a Dockerfile (The blueprint to build our container)
+
+# 1. Start with a lightweight Linux Operating System that already has Python 3.9 installed
+FROM python:3.9-slim
+
+# 2. Set the working directory inside the container
+WORKDIR /app
+
+# 3. Copy our requirements file (list of libraries) into the container
+COPY requirements.txt .
+
+# 4. Install all the required AI libraries
+RUN pip install -r requirements.txt
+
+# 5. Copy our actual machine learning code into the container
+COPY app.py .
+
+# 6. When the container starts, run our FastAPI server
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    `,
+    memoryTricks: "<b>Container</b> = A literal shipping container. Once it's packed, it can be dropped anywhere in the world and nothing inside shifts.",
+    recap: "Docker solves the environment problem, wrapping models into portable, immutable containers ready for the cloud."
+  },
+  {
+    id: "sql-basics",
+    courseType: "SQL",
+    title: "1. SQL Basics for Data Science",
+    overview: "The universal language used to ask databases questions and pull out exactly the data you need for your AI models.<br><br><b>Analogy:</b> SQL is like an incredibly smart librarian. You don't have to search the library yourself; you just tell the librarian exactly what books you want, and they hand them to you.",
+    coreConcept: `
+      Before you can train an AI, you need data. That data lives in relational databases.
+      <b>SQL (Structured Query Language)</b> allows you to Select, Filter, and Sort millions of rows in milliseconds.
+      Every SQL query follows this core flow: <b>SELECT</b> (columns) <b>FROM</b> (table) <b>WHERE</b> (condition).
+    `,
+    realTimeExamples: [
+      { subTopic: "Data Extraction", description: "Pulling training data", scenario: "Selecting 10,000 historical loan records to train a credit risk model", industry: "Banking" },
+      { subTopic: "Data Cleaning", description: "Filtering bad rows", scenario: "Ignoring rows where 'Age' is negative or missing", industry: "Data Engineering" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Boolean Logic</h4>
+        <p>The WHERE clause uses strict Boolean math (AND, OR, NOT). E.g., <code>(Age > 18) AND (Income > 50000)</code> results in True or False for every row.</p>
+      </div>
+    `,
+    code: `
+-- A basic SQL Query to extract training data
+
+-- 1. SELECT tells the database which columns we want to extract
+SELECT 
+    user_id, 
+    age, 
+    annual_income, 
+    purchased_product
+
+-- 2. FROM tells the database which specific table holds our data
+FROM 
+    customer_database
+
+-- 3. WHERE filters the rows based on mathematical logic
+WHERE 
+    age >= 18 
+    AND annual_income IS NOT NULL
+
+-- 4. ORDER BY sorts the final result
+ORDER BY 
+    annual_income DESC;
+    `,
+    memoryTricks: "<b>S-F-W</b> = Select (What), From (Where), Where (Filter).",
+    recap: "SQL is the foundational tool for all data scientists to extract and filter raw data from databases before analysis."
+  },
+  {
+    id: "sql-joins-aggregations",
+    courseType: "SQL",
+    title: "2. SQL Joins & Aggregations",
+    overview: "Smashing multiple different tables together and summarizing millions of rows into a single number (like an average).<br><br><b>Analogy:</b> You have a list of names, and your friend has a list of phone numbers. A JOIN is comparing the names to combine them into one master contact book.",
+    coreConcept: `
+      Data is usually split across many tables. <b>JOINs</b> allow us to connect tables using a common key (like an ID number).
+      <b>Aggregations</b> (like SUM, AVG, COUNT) let us perform math on columns, and the <b>GROUP BY</b> clause lets us calculate those averages for specific groups (e.g., Average Income grouped by City).
+    `,
+    realTimeExamples: [
+      { subTopic: "Feature Engineering", description: "Combining user and transaction data", scenario: "Joining user profiles with their purchase history to build an AI feature", industry: "E-Commerce" },
+      { subTopic: "Business Intelligence", description: "Dashboarding", scenario: "Calculating the total revenue GROUPED BY month", industry: "Analytics" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>Set Theory</h4>
+        <p>An INNER JOIN is mathematically the Intersection of two sets (A ∩ B). A LEFT JOIN is the entirety of Set A, plus any overlapping parts of Set B.</p>
+      </div>
+    `,
+    code: `
+-- Using Joins and Aggregations to build an AI feature table
+
+SELECT 
+    users.city, 
+    -- Aggregate Math: Calculate the Average purchase amount for the city
+    AVG(transactions.amount) as avg_spent,
+    -- Aggregate Math: Count how many total purchases were made
+    COUNT(transactions.transaction_id) as total_purchases
+
+FROM 
+    users
+
+-- Join the transactions table onto the users table where the user IDs match!
+INNER JOIN 
+    transactions ON users.user_id = transactions.user_id
+
+-- Group the results so the math (AVG, COUNT) is calculated PER city
+GROUP BY 
+    users.city
+
+-- Filter the aggregated results (HAVING is like WHERE, but for Aggregations)
+HAVING 
+    COUNT(transactions.transaction_id) > 100;
+    `,
+    memoryTricks: "<b>JOIN</b> = Gluing tables sideways. <b>UNION</b> = Stacking tables vertically.",
+    recap: "Joins combine scattered data sets, and Aggregations summarize them, forming the core of feature engineering."
+  },
+  {
+    id: "math-probability",
+    courseType: "MATH",
+    title: "1. Probability & Distributions",
+    overview: "The mathematical language of uncertainty. How we mathematically model things that are random or unpredictable.<br><br><b>Analogy:</b> Rolling a loaded dice. You can't predict a single roll perfectly, but you can predict exactly what the sum of 1,000 rolls will be.",
+    coreConcept: `
+      Machine Learning is just applied probability! 
+      A <b>Distribution</b> is a shape that shows the likelihood of different outcomes. The most famous is the <b>Normal Distribution (Bell Curve)</b>.
+      Most things in nature (heights, test scores, measurement errors) naturally follow a Bell Curve, making it the bedrock of AI statistics.
+    `,
+    realTimeExamples: [
+      { subTopic: "Anomaly Detection", description: "Fraud systems", scenario: "Flagging a credit card transaction because it falls in the extreme 0.1% tail of the bell curve", industry: "Finance" },
+      { subTopic: "A/B Testing", description: "Conversion optimization", scenario: "Proving that a red button is mathematically better than a blue button", industry: "Marketing" }
+    ],
+    math: `
+      <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+        <h4>The Empirical Rule (68-95-99.7)</h4>
+        <p>In a Normal Distribution:<br>68% of data falls within 1 Standard Deviation.<br>95% falls within 2.<br>99.7% falls within 3. Anything beyond 3 is considered a massive anomaly!</p>
+      </div>
+    `,
+    code: `
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats # Scipy has advanced statistical functions
+
+# Define a Normal Distribution with a Mean (average) of 0, and Standard Deviation of 1
+mu = 0
+sigma = 1
+
+# Generate an X-axis spanning from -4 to +4
+x = np.linspace(mu - 4*sigma, mu + 4*sigma, 100)
+
+# Calculate the Y-axis (the probability density) for the Bell Curve
+y = stats.norm.pdf(x, mu, sigma)
+
+# Plot the beautiful Bell Curve!
+plt.plot(x, y, color='purple', linewidth=3)
+plt.title('The Normal Distribution (Bell Curve)')
+plt.fill_between(x, y, alpha=0.2, color='purple')
+plt.show()
+    `,
+    memoryTricks: "<b>Normal Distribution</b> = It's 'Normal' because nature does it constantly (height, weight, grades).",
+    recap: "Probability allows AI to make calculated guesses in an uncertain world, with Distributions mapping out the likelihood of events."
+  }
+
 ];
+
 
