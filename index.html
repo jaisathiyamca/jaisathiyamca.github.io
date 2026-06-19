@@ -260,23 +260,72 @@
             padding: 4px 12px; border-radius: 20px;
         }
 
+        /* ── FEATURED ARTICLE ── */
+        .featured-article {
+            background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+            border: 1px solid #C7D2FE; border-radius: 16px;
+            padding: 28px 32px; margin-bottom: 4px;
+            position: relative; overflow: hidden;
+        }
+        .featured-article::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+        }
+        .featured-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--accent); color: white;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
+            padding: 4px 12px; border-radius: 20px; margin-bottom: 16px;
+        }
+        .featured-inner { display: grid; grid-template-columns: 1fr 220px; gap: 32px; align-items: center; }
+        .featured-meta { font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+        .featured-title { font-size: 1.1rem; font-weight: 800; color: var(--navy); margin-bottom: 10px; line-height: 1.35; }
+        .featured-desc { font-size: 0.83rem; color: #475569; line-height: 1.65; margin-bottom: 14px; }
+        .featured-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+        .featured-read-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--accent); color: white;
+            font-size: 0.8rem; font-weight: 600;
+            padding: 9px 20px; border-radius: 8px;
+            transition: background .2s, transform .15s;
+        }
+        .featured-read-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+        .featured-right { display: flex; justify-content: center; }
+        .featured-graphic {
+            background: white; border: 1px solid var(--border);
+            border-radius: 14px; padding: 22px 18px;
+            text-align: center; width: 100%;
+        }
+        .fg-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .fg-stack { display: flex; flex-direction: column; gap: 7px; }
+        .fg-pill {
+            font-size: 0.72rem; font-weight: 700;
+            padding: 5px 10px; border-radius: 6px; text-align: center;
+        }
+        .fg-java { background: #FEF3C7; color: #92400E; }
+        .fg-react { background: #DBEAFE; color: #1D4ED8; }
+        .fg-arch { background: #D1FAE5; color: #065F46; }
+
         /* ── BLOG ── */
         .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .blog-card {
             background: white; border: 1px solid var(--border);
             border-radius: 14px; padding: 22px;
             transition: box-shadow .2s, transform .2s;
+            display: flex; flex-direction: column;
         }
         .blog-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
         .blog-date { font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
         .blog-card h3 { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.4; }
-        .blog-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.55; margin-bottom: 12px; }
-        .blog-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .blog-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.55; margin-bottom: 12px; flex: 1; }
+        .blog-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
         .blog-tag {
             background: #EEF2FF; color: var(--accent);
             font-size: 0.68rem; font-weight: 600;
             padding: 3px 8px; border-radius: 6px;
         }
+        .blog-read-more { font-size: 0.78rem; font-weight: 600; color: var(--accent); margin-top: auto; }
 
         /* ── FOOTER ── */
         footer {
@@ -296,6 +345,24 @@
             .profile-card { max-width: 340px; }
             .skills-columns { grid-template-columns: repeat(2, 1fr); }
         }
+        /* ── EDUCATION & CERTS ── */
+        .edu-certs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .edu-card {
+            background: white; border: 1px solid var(--border);
+            border-radius: 14px; padding: 22px;
+            display: flex; gap: 16px; align-items: flex-start;
+        }
+        .edu-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .edu-body { flex: 1; }
+        .edu-title { font-size: 0.9rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+        .edu-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
+        .edu-year { font-size: 0.7rem; font-weight: 600; color: var(--accent); background: #EEF2FF; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+
         @media (max-width: 768px) {
             nav { padding: 0 20px; }
             .nav-links { display: none; }
@@ -306,9 +373,11 @@
             .tl-left { text-align: left; }
             .tl-right { border-left: none; padding-left: 0; }
             .tl-right::before { display: none; }
-            .projects-grid, .blog-grid, .skills-columns { grid-template-columns: 1fr; }
+            .projects-grid, .blog-grid, .skills-columns, .edu-certs-grid { grid-template-columns: 1fr; }
             .stats-bar { grid-template-columns: repeat(2, 1fr); }
             .open-banner { grid-template-columns: 1fr; }
+            .featured-inner { grid-template-columns: 1fr; }
+            .featured-right { display: none; }
         }
     </style>
 </head>
@@ -323,6 +392,7 @@
         <a href="#skills">Skills</a>
         <a href="#projects">Projects</a>
         <a href="#articles">Articles</a>
+        <a href="#education">Education</a>
         <a href="/about">About</a>
     </div>
     <a href="mailto:srisathiyamca@gmail.com" class="nav-cta">Hire Me</a>
@@ -354,6 +424,7 @@
                 <span class="pill">🐳 Docker & K8s</span>
                 <span class="pill">🔍 SonarQube</span>
                 <span class="pill">📊 Dynatrace</span>
+                <span class="pill">✍️ Technical Author</span>
             </div>
             <div class="hero-actions">
                 <a href="/assets/Sathiyaraj_Resume.pdf" class="btn-primary" download>
@@ -726,10 +797,53 @@
 <!-- ARTICLES -->
 <section class="section" id="articles">
     <div class="section-inner">
-        <div class="section-label">Writing</div>
-        <div class="section-title">Latest Articles</div>
-        <div class="section-sub">Notes and guides from real production experience</div>
-        <div class="blog-grid">
+        <div class="section-label">Writing & Tutorials</div>
+        <div class="section-title">Technical Articles</div>
+        <div class="section-sub">Deep-dives, tutorials, and insights from 12+ years of production engineering</div>
+
+        <!-- Featured Tutorial -->
+        <div class="featured-article">
+            <div class="featured-badge">⭐ Featured Tutorial</div>
+            <div class="featured-inner">
+                <div class="featured-left">
+                    <div class="featured-meta">Jun 19, 2026 &nbsp;·&nbsp; Full-Stack Tutorial &nbsp;·&nbsp; 15+ Lessons</div>
+                    <h3 class="featured-title">Order Up: Full-Stack & System Design via Food Delivery</h3>
+                    <p class="featured-desc">A complete, story-driven guide that teaches Spring Boot MVC, REST APIs, Security (JWT), React.js, and real-world System Design — all by building a production-grade food delivery app from scratch. 15+ lessons across backend, frontend, and architecture phases with code examples throughout.</p>
+                    <div class="featured-tags">
+                        <span class="blog-tag">Spring Boot</span>
+                        <span class="blog-tag">React.js</span>
+                        <span class="blog-tag">System Design</span>
+                        <span class="blog-tag">JWT / Security</span>
+                        <span class="blog-tag">Microservices</span>
+                        <span class="blog-tag">Full-Stack</span>
+                    </div>
+                    <a href="/blog/2026/06/19/food-delivery-fullstack-tutorial/" class="featured-read-btn">Read Tutorial →</a>
+                </div>
+                <div class="featured-right">
+                    <div class="featured-graphic">
+                        <div class="fg-icon">🍕</div>
+                        <div class="fg-stack">
+                            <div class="fg-pill fg-java">Java / Spring Boot</div>
+                            <div class="fg-pill fg-react">React.js</div>
+                            <div class="fg-pill fg-arch">System Design</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="blog-grid" style="margin-top: 24px;">
+            <a href="/blog/2026/05/31/jvm-deep-dive/" class="blog-card" style="color:inherit;">
+                <div class="blog-date">May 31, 2026</div>
+                <h3>JVM Deep Dive — From Zero to Pro</h3>
+                <p>A visually rich, story-driven guide to the JVM — animated diagrams, production war stories, and every major Java version explained from first principles.</p>
+                <div class="blog-tags">
+                    <span class="blog-tag">Java</span>
+                    <span class="blog-tag">JVM</span>
+                    <span class="blog-tag">Performance</span>
+                </div>
+                <div class="blog-read-more">Read article →</div>
+            </a>
             <div class="blog-card">
                 <div class="blog-date">Feb 14, 2026</div>
                 <h3>Debugging Memory Leaks in Production Java Apps</h3>
@@ -750,14 +864,50 @@
                     <span class="blog-tag">Architecture</span>
                 </div>
             </div>
-            <div class="blog-card">
-                <div class="blog-date">Feb 5, 2026</div>
-                <h3>Getting the Most Out of GCP for Java Teams</h3>
-                <p>How we use GKE, Cloud SQL, Pub/Sub, and GitHub Actions together — plus the things I wish I'd known earlier when we first moved to GCP.</p>
-                <div class="blog-tags">
-                    <span class="blog-tag">GCP</span>
-                    <span class="blog-tag">Kubernetes</span>
-                    <span class="blog-tag">Cloud</span>
+        </div>
+        <div style="text-align:center;margin-top:28px;">
+            <a href="/blog" style="display:inline-block;font-size:0.85rem;font-weight:600;color:var(--accent);border:1px solid #C7D2FE;padding:10px 24px;border-radius:8px;background:#EEF2FF;">View All Articles →</a>
+        </div>
+    </div>
+</section>
+
+<!-- EDUCATION & CERTIFICATIONS -->
+<section class="section section-alt" id="education">
+    <div class="section-inner">
+        <div class="section-label">Background</div>
+        <div class="section-title">Education & Certifications</div>
+        <div class="section-sub">Academic foundation and continuous learning</div>
+        <div class="edu-certs-grid">
+            <div class="edu-card">
+                <div class="edu-icon">🎓</div>
+                <div class="edu-body">
+                    <div class="edu-title">Master of Computer Applications (MCA)</div>
+                    <div class="edu-sub">Bharathidasan University, Tamil Nadu</div>
+                    <span class="edu-year">Completed</span>
+                </div>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">☁️</div>
+                <div class="edu-body">
+                    <div class="edu-title">Google Cloud Professional — Cloud Architect</div>
+                    <div class="edu-sub">GCP certification · Hands-on GKE, Cloud SQL, Pub/Sub</div>
+                    <span class="edu-year">GCP Certified</span>
+                </div>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">🍃</div>
+                <div class="edu-body">
+                    <div class="edu-title">Spring Framework & Spring Boot</div>
+                    <div class="edu-sub">Expert-level · 12+ years production usage · Renault Nissan, Infosys</div>
+                    <span class="edu-year">12+ Yrs</span>
+                </div>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">✍️</div>
+                <div class="edu-body">
+                    <div class="edu-title">Technical Author & Educator</div>
+                    <div class="edu-sub">Author of full-stack tutorials: JVM Deep Dive, Food Delivery System Design, and more</div>
+                    <span class="edu-year">2026</span>
                 </div>
             </div>
         </div>
