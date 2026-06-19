@@ -285,6 +285,7 @@ code{font-family:'JetBrains Mono',monospace;background:#1E2535;color:#C084FC;pad
   <div class="sb-section">
     <div class="sb-label">Your Starting Point</div>
     <a href="#intro" class="sb-link active"><span class="sb-num">01</span>What We're Building</a>
+    <a href="#auto-detect" class="sb-link" style="color:#34D399;font-weight:700;"><span class="sb-num" style="background:#065F46;color:#34D399;">★</span>Auto-Detect Stack</a>
     <a href="#structure" class="sb-link"><span class="sb-num">02</span>Your 5-Service Setup</a>
   </div>
   <div class="sb-section">
@@ -389,6 +390,343 @@ code{font-family:'JetBrains Mono',monospace;background:#1E2535;color:#C084FC;pad
       <tr><td><span class="tag tag-arch">Arch</span></td><td>Impact analysis, architecture diagrams, sequence flows, Confluence pages</td><td>Mermaid diagram + ADR + Confluence-ready content</td></tr>
     </tbody>
   </table>
+</div>
+
+<!-- ═══ AUTO-DETECT PHASE ═══════════════════ -->
+<div class="phase" style="background:linear-gradient(90deg,#065F46,#059669);">
+  <span class="ph-num">PHASE 00.5</span>
+  <span class="ph-title">Auto-Detect Your Stack</span>
+  <span class="ph-sub">Paste config files → AI discovers everything. Zero manual input.</span>
+</div>
+
+<div class="lesson" id="auto-detect">
+  <div class="lesson-tag"><span class="l-phase" style="background:rgba(16,185,129,.15);color:#34D399;">Auto-Detect</span><span class="l-num">★ Start Here</span></div>
+  <h2>Let the AI Discover Your Tech Stack</h2>
+  <p class="lesson-sub">Don't type in your service names, frameworks, or responsibilities. Instead, paste 2–3 config files and the AI reads your entire architecture automatically. Use the prompts in order — each one builds on the previous output.</p>
+
+  <div class="callout" style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);border-radius:var(--r);padding:14px 18px;margin-bottom:28px;display:flex;gap:12px;align-items:flex-start;">
+    <span style="font-size:1.3rem;">🚀</span>
+    <div style="font-size:.85rem;color:#6EE7B7;line-height:1.6;">
+      <strong style="color:#34D399;">How this works:</strong> Run 3 bash commands (copy-paste below), paste the output into Claude, and you get a complete tech-stack map + service context — no description required. The AI reads your <code>docker-compose.yml</code>, build files, and directory tree so you never have to type your stack manually.
+    </div>
+  </div>
+
+  <!-- Step 0 — Generate the dump -->
+  <h3>Step 1 — Generate Your Source Snapshot (30 seconds)</h3>
+  <p style="color:var(--ink2);font-size:.88rem;margin-bottom:16px;">Run these commands from your project root. They produce the files you'll paste into the prompts below.</p>
+
+  <div class="cb">
+    <div class="cb-head"><span class="cb-lang">bash — Generate snapshot files to paste into AI</span><button class="cb-copy" onclick="copyCode(this)">Copy</button></div>
+    <div class="cb-body"><pre><span class="cmt"># 1. Directory tree — reveals all services and their structure</span>
+find . -maxdepth 4 \
+  \( -name "*.java" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" \
+     -o -name "pom.xml" -o -name "build.gradle" -o -name "package.json" \
+     -o -name "docker-compose*.yml" -o -name "application*.yml" \
+     -o -name "application*.properties" \) \
+  -not -path "*/node_modules/*" \
+  -not -path "*/.git/*" \
+  -not -path "*/target/*" \
+  -not -path "*/build/*" \
+  | sort > /tmp/project-tree.txt
+echo "✓ Tree written to /tmp/project-tree.txt"
+
+<span class="cmt"># 2. Config files — reveals tech stack, ports, env vars, dependencies</span>
+cat docker-compose*.yml 2>/dev/null || echo "[no docker-compose found]"
+find . -name "pom.xml" -not -path "*/target/*" | head -10 | xargs -I{} sh -c 'echo "=== {} ==="; cat {}'
+find . -name "package.json" -not -path "*/node_modules/*" | head -5 | xargs -I{} sh -c 'echo "=== {} ==="; cat {}'
+
+<span class="cmt"># 3. Controller files — reveals all API endpoints</span>
+find . -name "*Controller*.java" -o -name "*controller*.java" \
+  | grep -v "/test/" | grep -v "/target/" \
+  | xargs -I{} sh -c 'echo "=== {} ==="; cat {}'</pre></div>
+  </div>
+
+  <!-- Prompt AD-1 -->
+  <h3 style="margin-top:32px;">Prompt AD-1 — Auto-Detect All Services &amp; Tech Stack</h3>
+  <p style="color:var(--ink2);font-size:.88rem;margin-bottom:12px;"><strong>What to paste:</strong> Output of bash command #1 (project-tree.txt) + bash command #2 (docker-compose + build files). <em>No other input needed.</em></p>
+
+  <div class="prompt-box">
+    <div class="pb-head">
+      <span class="pb-icon">🤖</span>
+      <span class="pb-title">AD-1 — Discover All Services from Project Structure</span>
+      <span class="pb-role tag tag-all">All Roles · Zero Input</span>
+      <button class="pb-copy" onclick="copyPrompt(this)">Copy</button>
+    </div>
+    <div class="pb-body">
+      <div class="pb-text">I am going to paste you the file tree and config files of my microservices project.
+DO NOT ask me to describe my services — detect everything from the files I give you.
+
+=== PROJECT FILE TREE ===
+[PASTE output of: find . -maxdepth 4 -name "*.java" -o -name "*.ts" ... | sort]
+
+=== DOCKER-COMPOSE / BUILD FILES ===
+[PASTE output of: cat docker-compose.yml + pom.xml files + package.json files]
+
+From these files alone, please detect and output:
+
+## 1. SERVICE MAP
+For each service you find:
+| Service Name | Type (Frontend/Backend/Gateway/Worker) | Framework & Version | Port | Primary Responsibility |
+(infer the responsibility from the service/package names, controller names, entity names)
+
+## 2. TECH STACK PER SERVICE
+| Service | Language | Framework | DB Driver | Messaging | Auth |
+(read from pom.xml dependencies / package.json dependencies)
+
+## 3. DATABASE TOPOLOGY
+List every database you find (from docker-compose env vars, datasource config, JPA entities):
+- Service → DB type → DB name → connection string pattern
+
+## 4. INTER-SERVICE COMMUNICATION
+From: Feign clients / RestTemplate / WebClient / axios baseURL / environment variables:
+| Caller Service | Called Service | Communication Type | Endpoint Pattern |
+
+## 5. SHARED INFRASTRUCTURE
+Any shared components: API gateway, message broker (Kafka/RabbitMQ), cache (Redis), service discovery (Eureka), config server
+
+## 6. SUMMARY CARD (ready to reuse in all prompts below)
+Output a YAML block I can paste into any prompt as my system definition:
+
+```yaml
+system:
+  frontend:
+    name: [detected-name]
+    framework: [detected-framework]
+    port: [detected-port]
+  services:
+    - name: [detected-name]
+      framework: [detected-framework]
+      port: [detected-port]
+      responsibility: [inferred-responsibility]
+      database: [detected-db]
+  infrastructure:
+    gateway: [yes/no + name]
+    messaging: [detected-broker or none]
+    cache: [detected-cache or none]
+```
+
+Important: If you cannot detect something from the files, say "NOT DETECTED" — do not guess.</div>
+    </div>
+  </div>
+
+  <!-- Prompt AD-2 -->
+  <h3 style="margin-top:36px;">Prompt AD-2 — Extract Full Context from a Single Service (No Description)</h3>
+  <p style="color:var(--ink2);font-size:.88rem;margin-bottom:12px;"><strong>What to paste:</strong> Controller files + Service layer + Entity files + Repository files for ONE service. Run bash command #3 to get controller files, then add the others. Repeat once per service.</p>
+
+  <div class="prompt-box">
+    <div class="pb-head">
+      <span class="pb-icon">🤖</span>
+      <span class="pb-title">AD-2 — Extract Service Context from Source Code (No Manual Description)</span>
+      <span class="pb-role tag tag-dev">Dev · QA · Arch</span>
+      <button class="pb-copy" onclick="copyPrompt(this)">Copy</button>
+    </div>
+    <div class="pb-body">
+      <div class="pb-text">I am pasting the source code of one microservice. Read the code and extract a structured context.
+DO NOT ask me what this service does — figure it out from the code.
+
+=== SOURCE FILES ===
+[PASTE: all *Controller.java + *Service.java + *Entity.java + *Repository.java + application.yml for this service]
+
+From the code above, extract:
+
+## SERVICE CONTEXT: [auto-detect service name from package/directory]
+
+### Endpoints (from @RequestMapping / @GetMapping / @PostMapping etc.)
+| Method | Path | Request Body (fields + types) | Response (fields + types) | Auth Required |
+
+### Business Rules (from validation annotations, if-else logic, throw statements)
+List every rule you find: "Rule BR-N: [plain English description] — found in [ClassName.methodName()]"
+
+### Data Model (from @Entity classes)
+For each entity:
+- Entity name, table name (@Table annotation)
+- Fields: name, type, nullable, unique, constraints
+- Relationships: @OneToMany, @ManyToOne etc.
+
+### Database Queries (from @Repository / @Query annotations)
+List any custom queries beyond basic CRUD
+
+### Inter-Service Calls (from Feign clients / RestTemplate / WebClient / @FeignClient)
+- Which service is called
+- Which endpoint
+- When it is called (which business operation triggers it)
+
+### Events (if using Kafka/RabbitMQ — from @KafkaListener / @RabbitListener / publish calls)
+- Events consumed: topic/queue name, payload shape
+- Events published: topic/queue name, payload shape
+
+### Error Handling
+Custom exceptions and their HTTP status codes
+
+---
+After extracting, output a COMPACT CONTEXT CARD (max 400 words) summarising this service — this is what gets added to the master context.</div>
+    </div>
+  </div>
+
+  <!-- Prompt AD-3 -->
+  <h3 style="margin-top:36px;">Prompt AD-3 — Auto-Detect Tech Stack from Build Files Only</h3>
+  <p style="color:var(--ink2);font-size:.88rem;margin-bottom:12px;"><strong>What to paste:</strong> Just your pom.xml or build.gradle files. Nothing else. Useful when you need the stack summary quickly without sharing source code.</p>
+
+  <div class="prompt-box">
+    <div class="pb-head">
+      <span class="pb-icon">🤖</span>
+      <span class="pb-title">AD-3 — Read pom.xml / build.gradle → Output Complete Tech Profile</span>
+      <span class="pb-role tag tag-arch">Arch · ABA</span>
+      <button class="pb-copy" onclick="copyPrompt(this)">Copy</button>
+    </div>
+    <div class="pb-body">
+      <div class="pb-text">I am pasting my Maven / Gradle build files. Extract the complete tech profile from the dependencies alone.
+DO NOT ask me what frameworks I use — read the dependency declarations.
+
+=== BUILD FILES ===
+[PASTE: pom.xml or build.gradle for each service — separate with === service-name ===]
+
+From the dependencies, detect and output for EACH service:
+
+### TECH PROFILE: [service-name]
+
+| Category | Detected Technology | Version | Evidence (dependency artifactId) |
+|---|---|---|---|
+| Framework | e.g. Spring Boot | e.g. 3.2.0 | spring-boot-starter-web |
+| Database | e.g. PostgreSQL | e.g. 15.x | postgresql driver |
+| ORM | e.g. Spring Data JPA | - | spring-boot-starter-data-jpa |
+| Security | e.g. Spring Security + JWT | - | spring-security + jjwt |
+| Messaging | e.g. Apache Kafka | - | spring-kafka |
+| Cache | e.g. Redis | - | spring-boot-starter-data-redis |
+| Testing | e.g. JUnit 5 + Mockito | - | spring-boot-starter-test |
+| API Docs | e.g. Springdoc OpenAPI | - | springdoc-openapi-starter |
+| Inter-service | e.g. OpenFeign | - | spring-cloud-starter-openfeign |
+| Validation | e.g. Bean Validation | - | spring-boot-starter-validation |
+| Other | [any notable libs] | - | [artifactId] |
+
+Then produce:
+## CROSS-SERVICE SUMMARY
+- Common patterns across all services (shared base dependencies)
+- Services that use messaging vs REST-only
+- Services with their own DB vs shared DB (infer from multiple datasource configs)
+- Java version used across services
+
+## COMPATIBILITY NOTES
+Flag any version conflicts or outdated dependencies that may affect SpecKit scanning.</div>
+    </div>
+  </div>
+
+  <!-- Prompt AD-4 -->
+  <h3 style="margin-top:36px;">Prompt AD-4 — Auto-Extract Frontend Context from React/Angular Code</h3>
+  <p style="color:var(--ink2);font-size:.88rem;margin-bottom:12px;"><strong>What to paste:</strong> Your router config file + one API service/store file + key component files. The AI detects all pages, routes, API calls, and UI flows.</p>
+
+  <div class="prompt-box">
+    <div class="pb-head">
+      <span class="pb-icon">🤖</span>
+      <span class="pb-title">AD-4 — Extract Frontend Context from Source (Routes, API Calls, State)</span>
+      <span class="pb-role tag tag-qa">QA · ABA</span>
+      <button class="pb-copy" onclick="copyPrompt(this)">Copy</button>
+    </div>
+    <div class="pb-body">
+      <div class="pb-text">I am pasting frontend source code. Extract the full UI context from the code.
+DO NOT ask me to describe my pages or flows — read the code and detect them.
+
+=== FRONTEND SOURCE FILES ===
+[PASTE: router config (AppRouter.tsx / app-routing.module.ts / routes.js)
+        + API service files (*.service.ts / api/*.ts / store/*.ts)
+        + Main component files for key pages]
+
+From the code, extract:
+
+## FRONTEND CONTEXT: [auto-detect: React/Angular/Vue + version from package.json if provided]
+
+### All Routes / Pages
+| Route Path | Component Name | Auth Guard? | Page Purpose (infer from component name) |
+
+### All API Calls (from axios/fetch/HttpClient/RTK Query calls)
+| HTTP Method | Backend URL/Path | Called From (component/service) | When Triggered | Request Payload Fields | Response Fields Used |
+
+### State Management
+- State library: [Redux / Zustand / NgRx / Context / none — detect from imports]
+- State slices/stores: list each with the data shape it manages
+
+### Authentication Flow
+- Login route and component
+- Token storage method (localStorage / sessionStorage / cookies — detect from code)
+- Protected routes list
+- Token refresh logic (if any)
+
+### Form Validations
+For each form you find, list:
+- Form name/page
+- Fields + validation rules (required, minLength, pattern, etc. — from validators or Formik schema)
+
+### UI-to-Backend Mapping
+| Page / Flow | Backend Service | Endpoints Called | Sequence |
+(e.g. Checkout page → order-service POST /orders → payment-service POST /payments)
+
+### Missing or Unclear Areas
+List any API calls where the backend endpoint is unclear or hardcoded in a way that may be environment-specific</div>
+    </div>
+  </div>
+
+  <!-- Prompt AD-5 — All-in-one zero input -->
+  <h3 style="margin-top:36px;">Prompt AD-5 — Zero-Input Master Context Builder</h3>
+  <p style="color:var(--ink2);font-size:.88rem;margin-bottom:12px;"><strong>The fastest path.</strong> Paste everything at once. Best for small-to-medium codebases. For large codebases, use AD-2 once per service instead.</p>
+
+  <div class="callout" style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;">
+    <span style="font-size:1.1rem;">⚠️</span>
+    <div style="font-size:.84rem;color:#FDE68A;line-height:1.6;">If your codebase is large (50+ files per service), use AD-2 per service instead. Pasting too much code at once may hit context limits. Use the chunking bash commands in Lesson 05.</div>
+  </div>
+
+  <div class="prompt-box">
+    <div class="pb-head">
+      <span class="pb-icon">🤖</span>
+      <span class="pb-title">AD-5 — Zero-Input: Paste Everything, Get Full Context</span>
+      <span class="pb-role tag tag-all">All Roles · One Shot</span>
+      <button class="pb-copy" onclick="copyPrompt(this)">Copy</button>
+    </div>
+    <div class="pb-body">
+      <div class="pb-text">I have a microservices project. I am going to paste files from it.
+Your job: detect and extract everything — tech stack, services, endpoints, data models, business rules, inter-service calls.
+DO NOT ask me to explain my project. Read the code. If something is unclear from the code, say so at the end.
+
+=== docker-compose.yml (or equivalent) ===
+[PASTE your docker-compose.yml]
+
+=== pom.xml / package.json files (one per service) ===
+[PASTE all build files]
+
+=== Controller / Route files (one per service) ===
+[PASTE all *Controller.java or router files]
+
+=== Entity / Model files ===
+[PASTE key @Entity classes or TypeScript interfaces/types]
+
+=== Inter-service client files ===
+[PASTE @FeignClient interfaces or axios service files]
+
+=== application.yml / .properties (key config only) ===
+[PASTE datasource, server.port, kafka/redis config sections]
+
+---
+
+From everything above, produce:
+
+# MASTER CONTEXT — [Project Name auto-detected]
+
+## 1. Tech Stack Summary (table: service | language | framework | DB | messaging | auth)
+## 2. Service Map (table: service name | type | port | responsibility | calls these services)
+## 3. API Surface (every endpoint across every service: method | path | service | purpose)
+## 4. Data Model Summary (every entity: name | key fields | owning service | relationships)
+## 5. Business Rules Catalogue (every rule found: ID | rule | where enforced)
+## 6. Event / Message Flows (if any: event name | publisher | consumer | payload)
+## 7. Cross-Service Flows (end-to-end user journeys: e.g. "Place Order" touches these services in this order)
+## 8. Feature Inventory (table: F-01..N | feature name | owning service | key files | endpoints)
+
+Keep the context dense but structured — I will use this in every subsequent prompt.</div>
+    </div>
+  </div>
+
+  <div class="callout co-tip" style="margin-top:24px;">
+    <span class="callout-icon">✅</span>
+    <div class="callout-text"><strong>After running AD-5 (or AD-1 + AD-2 per service):</strong> Save the output as <code>speckit-context.md</code>. From now on, every ABA, QA, Dev, and Architect prompt simply says "SYSTEM CONTEXT: [PASTE speckit-context.md]" — no more describing your stack.</div>
+  </div>
 </div>
 
 <!-- LESSON 02 -->
