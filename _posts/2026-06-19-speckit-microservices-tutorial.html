@@ -1,0 +1,1540 @@
+---
+layout: standalone
+title: "SpecKit for Microservices — Step-by-Step Guide with AI Prompts & Agent Workflows"
+date: 2026-06-19
+permalink: /speckit-tutorial/
+categories: [microservices, speckit, ai-prompts, system-design]
+tags: [speckit, microservices, openapi, spring-boot, ai-prompts, developer, qa, architect, aba, specification]
+excerpt: "A complete guide to SpecKit for microservices projects — installation, setup, context creation from source specs, reusable AI prompts for every stage, and custom agent workflows for Developers, QA, ABAs, and Architects."
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpecKit for Microservices — Step-by-Step Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #0F1117;
+  --bg-raised: #161B27;
+  --bg-card:   #1E2435;
+  --border:    rgba(255,255,255,0.08);
+  --ink:       #F1F5F9;
+  --ink-soft:  #94A3B8;
+  --ink-mute:  #64748B;
+  --accent:    #6366F1;
+  --accent2:   #8B5CF6;
+  --green:     #10B981;
+  --green-soft:#D1FAE5;
+  --amber:     #F59E0B;
+  --amber-soft:#FEF3C7;
+  --red:       #EF4444;
+  --blue:      #3B82F6;
+  --blue-soft: #DBEAFE;
+  --cyan:      #06B6D4;
+  --sidebar-w: 300px;
+  --radius:    12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+::selection{background:var(--accent);color:#fff;}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--bg-raised);border-right:1px solid var(--border);
+  padding:24px 18px 40px;scrollbar-width:thin;
+}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-track{background:transparent;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+.brand{margin-bottom:24px;padding-bottom:18px;border-bottom:1px dashed var(--border);}
+.brand-back{font-size:11px;color:var(--ink-mute);font-weight:600;letter-spacing:.5px;display:flex;align-items:center;gap:5px;margin-bottom:10px;}
+.brand-back a{color:var(--ink-mute);}
+.brand-back a:hover{color:var(--ink);}
+.brand-title{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--ink);line-height:1.2;}
+.brand-title span{color:var(--accent);}
+.brand-sub{font-size:11px;color:var(--ink-mute);margin-top:4px;font-family:'JetBrains Mono',monospace;}
+
+.nav-section{margin-bottom:6px;}
+.nav-section-label{font-size:10px;font-weight:700;color:var(--ink-mute);letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;transition:all .15s;}
+.nav-item:hover{background:rgba(99,102,241,0.1);color:var(--ink);}
+.nav-item.active{background:rgba(99,102,241,0.15);color:var(--accent);font-weight:600;}
+.nav-item .nav-num{width:20px;height:20px;border-radius:6px;background:var(--bg-card);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ink-mute);}
+.nav-item.active .nav-num{background:var(--accent);color:#fff;}
+.nav-agent{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;transition:all .15s;}
+.nav-agent:hover{background:rgba(99,102,241,0.08);color:var(--ink);}
+.nav-agent .agent-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ── MAIN ── */
+.main{min-width:0;padding:0 0 80px;}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,rgba(99,102,241,.15) 0%,rgba(139,92,246,.08) 50%,rgba(6,182,212,.05) 100%);
+  border-bottom:1px solid var(--border);
+  padding:56px 60px 48px;
+}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:20px;}
+.hero-eyebrow .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:900;line-height:1.15;letter-spacing:-.5px;margin-bottom:14px;}
+.hero h1 em{font-style:italic;color:var(--accent);}
+.hero-desc{font-size:1rem;color:var(--ink-soft);line-height:1.7;max-width:680px;margin-bottom:28px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;}
+.hero-pill{background:var(--bg-card);border:1px solid var(--border);color:var(--ink-soft);font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:20px;}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:640px;}
+.hstat{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
+.hstat-n{font-size:1.5rem;font-weight:800;color:var(--accent);}
+.hstat-l{font-size:10.5px;color:var(--ink-mute);font-weight:600;margin-top:2px;}
+
+/* ── SECTION ── */
+.content{padding:0 60px;}
+.lesson{padding:48px 0;border-bottom:1px solid var(--border);}
+.lesson:last-child{border-bottom:none;}
+.lesson-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.lesson-phase{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;background:rgba(99,102,241,.1);padding:3px 10px;border-radius:20px;}
+.lesson-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-mute);}
+.lesson h2{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:900;color:var(--ink);margin-bottom:10px;line-height:1.25;}
+.lesson-sub{font-size:0.9rem;color:var(--ink-soft);margin-bottom:24px;line-height:1.6;}
+.lesson p{font-size:0.9rem;color:#CBD5E1;line-height:1.75;margin-bottom:14px;}
+.lesson h3{font-size:1.05rem;font-weight:700;color:var(--ink);margin:28px 0 10px;}
+.lesson h4{font-size:0.88rem;font-weight:700;color:var(--ink-soft);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.5px;}
+.lesson ul,.lesson ol{padding-left:20px;margin-bottom:14px;}
+.lesson li{font-size:0.88rem;color:#94A3B8;line-height:1.7;margin-bottom:4px;}
+.lesson strong{color:var(--ink);}
+
+/* ── PHASE DIVIDER ── */
+.phase-divider{
+  background:linear-gradient(90deg,var(--accent) 0%,var(--accent2) 100%);
+  padding:20px 60px;margin:0;
+  display:flex;align-items:center;gap:14px;
+}
+.phase-divider .pd-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:rgba(255,255,255,.6);}
+.phase-divider .pd-title{font-size:1rem;font-weight:700;color:#fff;}
+.phase-divider .pd-desc{font-size:0.82rem;color:rgba(255,255,255,.7);margin-left:auto;}
+
+/* ── CODE BLOCKS ── */
+.code-block{background:#0D1117;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);margin:16px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:var(--ink-mute);letter-spacing:.5px;text-transform:uppercase;}
+.code-copy{font-size:10.5px;color:var(--ink-mute);cursor:pointer;padding:3px 8px;border:1px solid var(--border);border-radius:5px;background:transparent;font-family:'Inter',sans-serif;transition:all .15s;}
+.code-copy:hover{color:var(--ink);border-color:var(--accent);}
+.code-body{padding:20px;overflow-x:auto;}
+.code-body pre{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;margin:0;white-space:pre;}
+.tok-cmd{color:#79C0FF;}
+.tok-flag{color:#FFA657;}
+.tok-str{color:#A5D6FF;}
+.tok-cmt{color:#8B949E;font-style:italic;}
+.tok-kw{color:#FF7B72;}
+.tok-fn{color:#D2A8FF;}
+.tok-val{color:#7EE787;}
+.tok-key{color:#FFA657;}
+.tok-url{color:#A5D6FF;text-decoration:underline;}
+
+/* ── PROMPT BOX ── */
+.prompt-box{
+  background:linear-gradient(135deg,rgba(99,102,241,.08) 0%,rgba(139,92,246,.05) 100%);
+  border:1px solid rgba(99,102,241,.25);border-left:3px solid var(--accent);
+  border-radius:var(--radius);padding:20px 24px;margin:16px 0;
+}
+.prompt-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.prompt-icon{font-size:1.1rem;}
+.prompt-title{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;}
+.prompt-copy-btn{margin-left:auto;font-size:10.5px;color:var(--ink-mute);cursor:pointer;padding:3px 10px;border:1px solid rgba(99,102,241,.3);border-radius:5px;background:transparent;font-family:'Inter',sans-serif;transition:all .15s;}
+.prompt-copy-btn:hover{color:var(--accent);border-color:var(--accent);}
+.prompt-text{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#C9D1D9;line-height:1.75;white-space:pre-wrap;word-break:break-word;}
+
+/* ── AGENT CARDS ── */
+.agent-card{
+  border-radius:var(--radius);overflow:hidden;margin:20px 0;
+  border:1px solid var(--border);
+}
+.agent-header{padding:18px 24px;display:flex;align-items:center;gap:14px;}
+.agent-avatar{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.agent-info h3{font-size:1rem;font-weight:700;color:#fff;margin-bottom:2px;}
+.agent-info p{font-size:0.78rem;color:rgba(255,255,255,.65);}
+.agent-body{background:var(--bg-card);padding:20px 24px;}
+.agent-section-title{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;color:var(--ink-mute);}
+.agent-tasks{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;}
+.agent-task{display:flex;align-items:flex-start;gap:10px;font-size:0.83rem;color:var(--ink-soft);}
+.agent-task::before{content:"→";color:var(--accent);flex-shrink:0;margin-top:1px;}
+
+/* agent colour themes */
+.agent-dev .agent-header{background:linear-gradient(135deg,#1E3A5F,#1E293B);}
+.agent-dev .agent-avatar{background:rgba(59,130,246,.2);}
+.agent-qa .agent-header{background:linear-gradient(135deg,#1A3326,#1E293B);}
+.agent-qa .agent-avatar{background:rgba(16,185,129,.2);}
+.agent-aba .agent-header{background:linear-gradient(135deg,#3B1F5E,#1E293B);}
+.agent-aba .agent-avatar{background:rgba(139,92,246,.2);}
+.agent-arch .agent-header{background:linear-gradient(135deg,#3B2B00,#1E293B);}
+.agent-arch .agent-avatar{background:rgba(245,158,11,.2);}
+
+/* ── CALLOUT ── */
+.callout{display:flex;gap:14px;padding:16px 20px;border-radius:var(--radius);margin:16px 0;}
+.callout-info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);}
+.callout-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);}
+.callout-tip{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);}
+.callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.callout-body{font-size:0.85rem;color:var(--ink-soft);line-height:1.65;}
+.callout-body strong{color:var(--ink);}
+
+/* ── STEP LIST ── */
+.steps{display:flex;flex-direction:column;gap:0;}
+.step{display:grid;grid-template-columns:40px 1fr;gap:0 16px;position:relative;padding-bottom:28px;}
+.step:last-child{padding-bottom:0;}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px;z-index:1;}
+.step:not(:last-child) .step-left::after{content:'';position:absolute;left:15px;top:34px;width:2px;height:calc(100% - 32px);background:var(--border);}
+.step-left{position:relative;}
+.step-body h4{font-size:0.92rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.step-body p{font-size:0.85rem;color:var(--ink-soft);line-height:1.6;margin-bottom:10px;}
+
+/* ── TABLE ── */
+.spec-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.83rem;}
+.spec-table th{background:var(--bg-card);color:var(--ink-soft);font-weight:700;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+.spec-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:#94A3B8;vertical-align:top;}
+.spec-table tr:hover td{background:rgba(255,255,255,.02);}
+.tag-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.tag-dev{background:rgba(59,130,246,.15);color:#93C5FD;}
+.tag-qa{background:rgba(16,185,129,.15);color:#6EE7B7;}
+.tag-aba{background:rgba(139,92,246,.15);color:#C4B5FD;}
+.tag-arch{background:rgba(245,158,11,.15);color:#FCD34D;}
+.tag-all{background:rgba(99,102,241,.15);color:#A5B4FC;}
+
+/* ── MOBILE TOGGLE ── */
+.mobile-toggle{display:none;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{display:none;position:fixed;top:0;left:0;width:280px;height:100vh;z-index:200;}
+  .sidebar.open{display:block;}
+  .hero{padding:36px 24px 32px;}
+  .hero h1{font-size:1.8rem;}
+  .hero-stats{grid-template-columns:repeat(2,1fr);}
+  .content{padding:0 24px;}
+  .phase-divider{padding:16px 24px;}
+  .mobile-toggle{display:flex;align-items:center;justify-content:space-between;background:var(--bg-raised);border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:100;}
+  .mobile-toggle .mt-logo{font-weight:700;font-size:0.9rem;}
+  .mobile-toggle .mt-logo span{color:var(--accent);}
+  .mobile-toggle button{background:var(--bg-card);border:1px solid var(--border);color:var(--ink);padding:6px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-back">← <a href="/">Back to Portfolio</a></div>
+    <div class="brand-title"><span>Spec</span>Kit</div>
+    <div class="brand-sub">Microservices · AI-Augmented · Step-by-Step</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Getting Started</div>
+    <a href="#intro" class="nav-item active"><span class="nav-num">01</span>What is SpecKit?</a>
+    <a href="#install" class="nav-item"><span class="nav-num">02</span>Install SpecKit</a>
+    <a href="#setup" class="nav-item"><span class="nav-num">03</span>Setup for Microservices</a>
+    <a href="#context" class="nav-item"><span class="nav-num">04</span>Create Context from Specs</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Core Workflow</div>
+    <a href="#contracts" class="nav-item"><span class="nav-num">05</span>Define Service Contracts</a>
+    <a href="#generate" class="nav-item"><span class="nav-num">06</span>Generate Code from Specs</a>
+    <a href="#validate" class="nav-item"><span class="nav-num">07</span>Validate & Lint Specs</a>
+    <a href="#prompts" class="nav-item"><span class="nav-num">08</span>Reusable Prompt Library</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Agent Workflows</div>
+    <a href="#agent-dev" class="nav-agent"><span class="agent-dot" style="background:#3B82F6;"></span>Developer Agent</a>
+    <a href="#agent-qa" class="nav-agent"><span class="agent-dot" style="background:#10B981;"></span>QA Agent</a>
+    <a href="#agent-aba" class="nav-agent"><span class="agent-dot" style="background:#8B5CF6;"></span>ABA Agent</a>
+    <a href="#agent-arch" class="nav-agent"><span class="agent-dot" style="background:#F59E0B;"></span>Architect Agent</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Quick Reference</div>
+    <a href="#cheatsheet" class="nav-item"><span class="nav-num">⚡</span>Commands Cheatsheet</a>
+    <a href="#prompt-lib" class="nav-item"><span class="nav-num">📋</span>Full Prompt Library</a>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- Mobile nav toggle -->
+  <div class="mobile-toggle">
+    <div class="mt-logo"><span>Spec</span>Kit Guide</div>
+    <button onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Menu</button>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow"><span class="dot"></span>New Tutorial · 2026</div>
+    <h1>SpecKit for<br><em>Microservices</em></h1>
+    <p class="hero-desc">A complete, step-by-step guide to adopting SpecKit in microservices projects — from first install to AI-augmented daily workflows for every role on your team.</p>
+    <div class="hero-pills">
+      <span class="hero-pill">📦 SpecKit CLI</span>
+      <span class="hero-pill">🔗 OpenAPI / AsyncAPI</span>
+      <span class="hero-pill">🤖 AI Prompts</span>
+      <span class="hero-pill">🧑‍💻 Developer Agent</span>
+      <span class="hero-pill">🧪 QA Agent</span>
+      <span class="hero-pill">📐 Architect Agent</span>
+      <span class="hero-pill">📋 ABA Agent</span>
+      <span class="hero-pill">☕ Spring Boot</span>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">8</div><div class="hstat-l">Core Topics</div></div>
+      <div class="hstat"><div class="hstat-n">4</div><div class="hstat-l">Agent Roles</div></div>
+      <div class="hstat"><div class="hstat-n">20+</div><div class="hstat-l">Reusable Prompts</div></div>
+      <div class="hstat"><div class="hstat-n">∞</div><div class="hstat-l">Copy & Use</div></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ══════════════════════════════════
+       PHASE 1 — GETTING STARTED
+  ══════════════════════════════════ -->
+  </div><!-- /content -->
+  <div class="phase-divider">
+    <span class="pd-num">PHASE 01</span>
+    <span class="pd-title">Getting Started with SpecKit</span>
+    <span class="pd-desc">Install · Initialise · Connect to your microservices</span>
+  </div>
+  <div class="content">
+
+  <!-- LESSON 01 — WHAT IS SPECKIT -->
+  <div class="lesson" id="intro">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Introduction</span>
+      <span class="lesson-num">01</span>
+    </div>
+    <h2>What is SpecKit?</h2>
+    <p class="lesson-sub">SpecKit is a specification-first development framework for microservices teams. It treats your API contracts, data schemas, and event definitions as the single source of truth — then gives every role on your team (developers, QA, architects, analysts) AI-augmented tools to work from those specs daily.</p>
+
+    <p>In a traditional microservices project, specs drift. Developers implement one thing, the spec says another, QA tests a third version, and the architect's diagrams are six months old. SpecKit solves this by making specs <strong>executable, verifiable, and AI-queryable</strong>.</p>
+
+    <h3>Why SpecKit for Microservices?</h3>
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Core idea:</strong> Every microservice publishes a machine-readable spec (OpenAPI for REST, AsyncAPI for events, Avro/Protobuf for schemas). SpecKit indexes all of them into a unified context that AI agents can query, validate against, and generate code from.</div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Problem</th><th>SpecKit Solution</th></tr></thead>
+      <tbody>
+        <tr><td>API contracts drift from implementation</td><td>Contract tests auto-generated from specs and run in CI</td></tr>
+        <tr><td>New devs take weeks to understand the system</td><td>AI context built from all specs — ask questions in plain English</td></tr>
+        <tr><td>QA writes tests late in the cycle</td><td>Test cases generated from specs at design time</td></tr>
+        <tr><td>ABAs write requirements that devs ignore</td><td>Requirements map directly to spec fields and validation rules</td></tr>
+        <tr><td>Architects lose visibility as the system grows</td><td>Live dependency graph generated from service specs</td></tr>
+      </tbody>
+    </table>
+
+    <h3>SpecKit Architecture at a Glance</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Architecture</span></div>
+      <div class="code-body"><pre>
+  ┌─────────────────────────────────────────────────────┐
+  │                   Your Microservices                │
+  │  [order-service]  [payment-service]  [user-service] │
+  │       │                 │                  │        │
+  │   openapi.yaml      asyncapi.yaml    openapi.yaml   │
+  └──────────┬──────────────┬─────────────────┬────────┘
+             │              │                 │
+             └──────────────▼─────────────────┘
+                     SpecKit Context Engine
+                   ┌────────────────────────┐
+                   │  Unified Spec Index    │
+                   │  • Service registry    │
+                   │  • Schema graph        │
+                   │  • Contract store      │
+                   │  • Change history      │
+                   └────────────┬───────────┘
+                                │
+              ┌─────────────────┼─────────────────┐
+              ▼                 ▼                 ▼
+        Dev Agent          QA Agent         Arch Agent
+      (code gen,         (test cases,    (dependency map,
+      PR review)          mocks)          ADRs, impact)
+</pre></div>
+    </div>
+  </div>
+
+  <!-- LESSON 02 — INSTALL -->
+  <div class="lesson" id="install">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Installation</span>
+      <span class="lesson-num">02</span>
+    </div>
+    <h2>Install SpecKit</h2>
+    <p class="lesson-sub">SpecKit provides a CLI tool and a VS Code extension. Install both to get the full experience.</p>
+
+    <h3>Prerequisites</h3>
+    <ul>
+      <li>Node.js 18+ or Java 17+ (CLI available for both runtimes)</li>
+      <li>Git repository with at least one microservice</li>
+      <li>OpenAPI 3.x or AsyncAPI 2.x spec file(s)</li>
+      <li>A Claude API key (for AI-augmented features)</li>
+    </ul>
+
+    <h3>Option A — Install via npm (Recommended)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-cmt"># Install SpecKit CLI globally</span>
+<span class="tok-cmd">npm</span> install -g @speckit/cli
+
+<span class="tok-cmt"># Verify installation</span>
+<span class="tok-cmd">speckit</span> --version
+<span class="tok-cmt"># → SpecKit CLI v2.4.1</span>
+
+<span class="tok-cmt"># Install VS Code extension (optional but recommended)</span>
+<span class="tok-cmd">code</span> --install-extension speckit.speckit-vscode</pre></div>
+    </div>
+
+    <h3>Option B — Install via Homebrew (macOS/Linux)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-cmd">brew</span> tap speckit/tap
+<span class="tok-cmd">brew</span> install speckit</pre></div>
+    </div>
+
+    <h3>Option C — Install via Maven Plugin (Spring Boot projects)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">pom.xml</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-kw">&lt;plugin&gt;</span>
+  <span class="tok-kw">&lt;groupId&gt;</span>io.speckit<span class="tok-kw">&lt;/groupId&gt;</span>
+  <span class="tok-kw">&lt;artifactId&gt;</span>speckit-maven-plugin<span class="tok-kw">&lt;/artifactId&gt;</span>
+  <span class="tok-kw">&lt;version&gt;</span>2.4.1<span class="tok-kw">&lt;/version&gt;</span>
+  <span class="tok-kw">&lt;executions&gt;</span>
+    <span class="tok-kw">&lt;execution&gt;</span>
+      <span class="tok-kw">&lt;goals&gt;</span>
+        <span class="tok-kw">&lt;goal&gt;</span>validate<span class="tok-kw">&lt;/goal&gt;</span>
+        <span class="tok-kw">&lt;goal&gt;</span>generate<span class="tok-kw">&lt;/goal&gt;</span>
+      <span class="tok-kw">&lt;/goals&gt;</span>
+    <span class="tok-kw">&lt;/execution&gt;</span>
+  <span class="tok-kw">&lt;/executions&gt;</span>
+<span class="tok-kw">&lt;/plugin&gt;</span></pre></div>
+    </div>
+
+    <div class="callout callout-tip">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body"><strong>Reusable AI Prompt — Install SpecKit</strong><br>Copy the prompt below and use it with your AI assistant to get personalised install guidance.</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #1 — Install SpecKit</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I am setting up SpecKit CLI for a microservices project. My environment is:
+- OS: [your OS — e.g. macOS 14 / Ubuntu 22 / Windows 11]
+- Runtime: [Node 20 / Java 17 / both]
+- Package manager: [npm / yarn / homebrew / maven]
+- Project type: [Spring Boot / Node.js / mixed]
+- IDE: [VS Code / IntelliJ]
+
+Please guide me through:
+1. Installing SpecKit CLI for my environment
+2. Verifying the installation is correct
+3. Installing the IDE extension/plugin
+4. Configuring my Claude API key for AI features
+5. Running a quick smoke test to confirm everything works
+
+If I hit any errors, help me diagnose and fix them.</div>
+    </div>
+  </div>
+
+  <!-- LESSON 03 — SETUP -->
+  <div class="lesson" id="setup">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Setup</span>
+      <span class="lesson-num">03</span>
+    </div>
+    <h2>Setup SpecKit for Your Microservices Project</h2>
+    <p class="lesson-sub">Initialise SpecKit at the monorepo root (or per-service), connect your spec files, and configure team roles.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-left"><div class="step-num">1</div></div>
+        <div class="step-body">
+          <h4>Initialise SpecKit at the project root</h4>
+          <p>Run <code>speckit init</code> in the root of your monorepo or the parent directory containing your microservices.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-body"><pre><span class="tok-cmt"># Navigate to your project root</span>
+<span class="tok-cmd">cd</span> ~/projects/my-microservices
+
+<span class="tok-cmt"># Initialise SpecKit (interactive wizard)</span>
+<span class="tok-cmd">speckit</span> init
+
+<span class="tok-cmt"># → SpecKit will ask:</span>
+<span class="tok-cmt">#   Project name: my-microservices</span>
+<span class="tok-cmt">#   Spec format: OpenAPI / AsyncAPI / Mixed</span>
+<span class="tok-cmt">#   Services to register: (auto-detected)</span>
+<span class="tok-cmt">#   AI provider: Claude / OpenAI / Local</span></pre></div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">2</div></div>
+        <div class="step-body">
+          <h4>Review the generated <code>speckit.config.json</code></h4>
+          <p>SpecKit creates a config file at the root. Edit it to register all your services and their spec file locations.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">speckit.config.json</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-body"><pre>{
+  <span class="tok-key">"project"</span>: <span class="tok-str">"my-microservices"</span>,
+  <span class="tok-key">"version"</span>: <span class="tok-str">"1.0.0"</span>,
+  <span class="tok-key">"ai"</span>: {
+    <span class="tok-key">"provider"</span>: <span class="tok-str">"claude"</span>,
+    <span class="tok-key">"model"</span>: <span class="tok-str">"claude-sonnet-4-6"</span>
+  },
+  <span class="tok-key">"services"</span>: [
+    {
+      <span class="tok-key">"name"</span>: <span class="tok-str">"order-service"</span>,
+      <span class="tok-key">"path"</span>: <span class="tok-str">"./order-service"</span>,
+      <span class="tok-key">"spec"</span>: <span class="tok-str">"./order-service/src/main/resources/openapi.yaml"</span>,
+      <span class="tok-key">"type"</span>: <span class="tok-str">"rest"</span>
+    },
+    {
+      <span class="tok-key">"name"</span>: <span class="tok-str">"payment-service"</span>,
+      <span class="tok-key">"path"</span>: <span class="tok-str">"./payment-service"</span>,
+      <span class="tok-key">"spec"</span>: <span class="tok-str">"./payment-service/src/main/resources/openapi.yaml"</span>,
+      <span class="tok-key">"type"</span>: <span class="tok-str">"rest"</span>
+    },
+    {
+      <span class="tok-key">"name"</span>: <span class="tok-str">"notification-service"</span>,
+      <span class="tok-key">"path"</span>: <span class="tok-str">"./notification-service"</span>,
+      <span class="tok-key">"spec"</span>: <span class="tok-str">"./notification-service/src/main/resources/asyncapi.yaml"</span>,
+      <span class="tok-key">"type"</span>: <span class="tok-str">"event"</span>
+    }
+  ],
+  <span class="tok-key">"context"</span>: {
+    <span class="tok-key">"outputDir"</span>: <span class="tok-str">".speckit/context"</span>,
+    <span class="tok-key">"includeSourceCode"</span>: <span class="tok-val">true</span>,
+    <span class="tok-key">"includeTests"</span>: <span class="tok-val">true</span>
+  }
+}</pre></div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">3</div></div>
+        <div class="step-body">
+          <h4>Set your AI API key</h4>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-body"><pre><span class="tok-cmt"># Set Claude API key (add to ~/.zshrc or ~/.bashrc for persistence)</span>
+<span class="tok-cmd">export</span> ANTHROPIC_API_KEY=<span class="tok-str">"sk-ant-..."</span>
+
+<span class="tok-cmt"># Or store it in SpecKit's secure config</span>
+<span class="tok-cmd">speckit</span> config set ai.apiKey <span class="tok-str">"sk-ant-..."</span></pre></div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">4</div></div>
+        <div class="step-body">
+          <h4>Register all services and verify</h4>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-body"><pre><span class="tok-cmt"># Register all services defined in config</span>
+<span class="tok-cmd">speckit</span> register --all
+
+<span class="tok-cmt"># Validate all registered specs</span>
+<span class="tok-cmd">speckit</span> validate --all
+
+<span class="tok-cmt"># List registered services</span>
+<span class="tok-cmd">speckit</span> services list
+<span class="tok-cmt"># → ✓ order-service        (REST)   openapi.yaml v1.2.0</span>
+<span class="tok-cmt"># → ✓ payment-service      (REST)   openapi.yaml v1.0.3</span>
+<span class="tok-cmt"># → ✓ notification-service (EVENT)  asyncapi.yaml v1.1.0</span></pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #2 — Setup SpecKit for My Project</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I am setting up SpecKit for a microservices project with the following structure:
+- Number of services: [e.g. 5 Spring Boot microservices]
+- Spec type: [OpenAPI 3.0 / AsyncAPI 2.6 / Mixed]
+- Repository structure: [monorepo / polyrepo]
+- CI system: [GitHub Actions / Jenkins / GitLab CI]
+- Java version: [17 / 21]
+- Spring Boot version: [3.2.x]
+
+Please help me:
+1. Create a complete speckit.config.json for this project structure
+2. Register all services correctly with their spec file paths
+3. Configure the AI provider (Claude) with the right model settings
+4. Add SpecKit validation to my CI pipeline
+5. Set up a .speckit/ directory structure with gitignore rules
+
+Show me the exact commands and config files I need.</div>
+    </div>
+  </div>
+
+  <!-- LESSON 04 — CONTEXT -->
+  <div class="lesson" id="context">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Context Creation</span>
+      <span class="lesson-num">04</span>
+    </div>
+    <h2>Create Context from Source Code Specs</h2>
+    <p class="lesson-sub">The SpecKit context is a rich, queryable snapshot of your entire microservices landscape — built by combining your spec files with actual source code.</p>
+
+    <p>The context is what makes AI features work accurately. Instead of sending raw source code to the AI (expensive and imprecise), SpecKit extracts structured metadata from your specs and code, builds a compact context file, and uses that for all AI queries.</p>
+
+    <h3>Build the Context</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-cmt"># Build full context for all services</span>
+<span class="tok-cmd">speckit</span> context build --all
+
+<span class="tok-cmt"># Build context for a single service</span>
+<span class="tok-cmd">speckit</span> context build --service order-service
+
+<span class="tok-cmt"># Build and include source code analysis</span>
+<span class="tok-cmd">speckit</span> context build --all --include-source --include-tests
+
+<span class="tok-cmt"># Watch mode: auto-rebuild context when specs change</span>
+<span class="tok-cmd">speckit</span> context watch</pre></div>
+    </div>
+
+    <h3>What Gets Indexed into the Context?</h3>
+    <table class="spec-table">
+      <thead><tr><th>Source</th><th>What SpecKit Extracts</th><th>Used By</th></tr></thead>
+      <tbody>
+        <tr><td>openapi.yaml</td><td>Endpoints, request/response schemas, error codes, auth methods</td><td><span class="tag-pill tag-all">All roles</span></td></tr>
+        <tr><td>asyncapi.yaml</td><td>Topics/queues, message schemas, producers/consumers</td><td><span class="tag-pill tag-dev">Dev</span> <span class="tag-pill tag-arch">Arch</span></td></tr>
+        <tr><td>Java source</td><td>Controller classes, service interfaces, DTO fields, annotations</td><td><span class="tag-pill tag-dev">Dev</span> <span class="tag-pill tag-qa">QA</span></td></tr>
+        <tr><td>Test files</td><td>Existing test coverage, test data patterns</td><td><span class="tag-pill tag-qa">QA</span></td></tr>
+        <tr><td>Git history</td><td>Recent changes per service, change frequency</td><td><span class="tag-pill tag-arch">Arch</span> <span class="tag-pill tag-qa">QA</span></td></tr>
+        <tr><td>Pom.xml / package.json</td><td>Dependencies, versions, frameworks</td><td><span class="tag-pill tag-arch">Arch</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Query the Context</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-cmt"># Ask a question about your system in plain English</span>
+<span class="tok-cmd">speckit</span> ask <span class="tok-str">"Which services expose a POST /orders endpoint?"</span>
+
+<span class="tok-cmt"># Find all services that consume OrderPlaced events</span>
+<span class="tok-cmd">speckit</span> ask <span class="tok-str">"What consumes the OrderPlaced event?"</span>
+
+<span class="tok-cmt"># Check for schema mismatches between services</span>
+<span class="tok-cmd">speckit</span> context diff order-service payment-service
+
+<span class="tok-cmt"># Export context for use in custom AI prompts</span>
+<span class="tok-cmd">speckit</span> context export --format markdown --output context.md</pre></div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #3 — Create Context from Source Code Specs</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I want to create a SpecKit context from my microservices source code and spec files.
+
+My project details:
+- Services: [list your services, e.g. order-service, payment-service, user-service]
+- Spec files location: [e.g. src/main/resources/openapi.yaml per service]
+- Source language: [Java 17 with Spring Boot 3.2]
+- Spec format: [OpenAPI 3.0]
+
+Please help me:
+1. Run the correct speckit context build command for my setup
+2. Verify the context was built correctly and includes all services
+3. Write a speckit.config.json context section that captures source code, tests, and git history
+4. Show me how to query the context to verify it understands my system
+5. Set up context auto-rebuild in my CI pipeline so it stays fresh
+
+After building, help me verify the context is accurate by asking it 3 test questions about my system.</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #4 — Validate Context Completeness</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">Here is my SpecKit context export:
+
+[PASTE YOUR context.md HERE — run: speckit context export --format markdown]
+
+Please analyse this context and tell me:
+1. Which services are well-documented vs. have thin specs?
+2. Are there any obvious gaps — missing error schemas, undocumented endpoints, or events without consumer definitions?
+3. Which service-to-service relationships are unclear from the specs alone?
+4. What information should I add to my spec files to make the context more useful for AI queries?
+
+Give me a prioritised list of improvements with the exact spec changes needed.</div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+  <div class="phase-divider">
+    <span class="pd-num">PHASE 02</span>
+    <span class="pd-title">Core SpecKit Workflow</span>
+    <span class="pd-desc">Contracts · Code Gen · Validation · Prompts</span>
+  </div>
+  <div class="content">
+
+  <!-- LESSON 05 — CONTRACTS -->
+  <div class="lesson" id="contracts">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Contracts</span>
+      <span class="lesson-num">05</span>
+    </div>
+    <h2>Define Service Contracts</h2>
+    <p class="lesson-sub">SpecKit uses OpenAPI 3.x for REST contracts and AsyncAPI 2.x for event-driven contracts. Here's how to write them effectively for microservices.</p>
+
+    <h3>REST Contract — order-service</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">openapi.yaml</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-key">openapi</span>: <span class="tok-str">"3.0.3"</span>
+<span class="tok-key">info</span>:
+  <span class="tok-key">title</span>: <span class="tok-str">Order Service API</span>
+  <span class="tok-key">version</span>: <span class="tok-str">"1.2.0"</span>
+  <span class="tok-key">description</span>: <span class="tok-str">Manages order lifecycle — create, track, cancel</span>
+  <span class="tok-key">contact</span>:
+    <span class="tok-key">name</span>: <span class="tok-str">Platform Team</span>
+    <span class="tok-key">email</span>: <span class="tok-str">platform@company.com</span>
+
+<span class="tok-key">servers</span>:
+  - <span class="tok-key">url</span>: <span class="tok-str">https://api.company.com/orders/v1</span>
+    <span class="tok-key">description</span>: <span class="tok-str">Production</span>
+  - <span class="tok-key">url</span>: <span class="tok-str">http://localhost:8081</span>
+    <span class="tok-key">description</span>: <span class="tok-str">Local development</span>
+
+<span class="tok-key">paths</span>:
+  <span class="tok-key">/orders</span>:
+    <span class="tok-key">post</span>:
+      <span class="tok-key">summary</span>: <span class="tok-str">Place a new order</span>
+      <span class="tok-key">operationId</span>: <span class="tok-str">createOrder</span>
+      <span class="tok-key">tags</span>: [<span class="tok-str">Orders</span>]
+      <span class="tok-key">requestBody</span>:
+        <span class="tok-key">required</span>: <span class="tok-val">true</span>
+        <span class="tok-key">content</span>:
+          <span class="tok-key">application/json</span>:
+            <span class="tok-key">schema</span>:
+              <span class="tok-key">$ref</span>: <span class="tok-str">'#/components/schemas/CreateOrderRequest'</span>
+      <span class="tok-key">responses</span>:
+        <span class="tok-str">"201"</span>:
+          <span class="tok-key">description</span>: <span class="tok-str">Order created successfully</span>
+          <span class="tok-key">content</span>:
+            <span class="tok-key">application/json</span>:
+              <span class="tok-key">schema</span>:
+                <span class="tok-key">$ref</span>: <span class="tok-str">'#/components/schemas/OrderResponse'</span>
+        <span class="tok-str">"400"</span>:
+          <span class="tok-key">$ref</span>: <span class="tok-str">'#/components/responses/ValidationError'</span>
+        <span class="tok-str">"422"</span>:
+          <span class="tok-key">$ref</span>: <span class="tok-str">'#/components/responses/BusinessRuleViolation'</span></pre></div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #5 — Generate OpenAPI Spec from Requirements</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I need to create an OpenAPI 3.0 spec for the following microservice:
+
+Service name: [e.g. order-service]
+Purpose: [e.g. manages customer orders — create, track, update status, cancel]
+Entities: [e.g. Order, OrderItem, DeliveryAddress]
+Business rules: [e.g. cannot cancel after shipped, minimum order value £10]
+Consumers: [e.g. payment-service calls POST /orders, frontend calls GET /orders/{id}]
+Auth: [e.g. JWT Bearer, user can only see their own orders]
+
+Generate a complete OpenAPI 3.0 YAML spec including:
+1. All CRUD endpoints with correct HTTP methods and status codes
+2. Request/response schemas with proper validation constraints
+3. Error response schemas (400, 401, 403, 404, 422, 500)
+4. Reusable components for common schemas and responses
+5. Server definitions for local/staging/production
+6. Security scheme definition
+
+Make it production-ready and SpecKit-compatible.</div>
+    </div>
+  </div>
+
+  <!-- LESSON 06 — GENERATE -->
+  <div class="lesson" id="generate">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Code Generation</span>
+      <span class="lesson-num">06</span>
+    </div>
+    <h2>Generate Code from Specs</h2>
+    <p class="lesson-sub">SpecKit can generate Spring Boot controller interfaces, DTOs, test stubs, and mock servers directly from your spec files.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-cmt"># Generate Spring Boot controller interfaces from spec</span>
+<span class="tok-cmd">speckit</span> generate --service order-service --target spring-boot --output src/main/java
+
+<span class="tok-cmt"># Generate DTOs (request/response classes)</span>
+<span class="tok-cmd">speckit</span> generate --service order-service --type dto --package com.company.order.dto
+
+<span class="tok-cmt"># Generate WireMock stubs for testing</span>
+<span class="tok-cmd">speckit</span> generate --service order-service --type mock --output src/test/resources/wiremock
+
+<span class="tok-cmt"># Generate Postman collection from spec</span>
+<span class="tok-cmd">speckit</span> generate --service order-service --type postman --output ./postman
+
+<span class="tok-cmt"># Generate all targets at once</span>
+<span class="tok-cmd">speckit</span> generate --all --target spring-boot</pre></div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #6 — Generate Spring Boot Code from Spec</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">Here is my OpenAPI spec for [service-name]:
+
+[PASTE YOUR openapi.yaml HERE]
+
+Generate production-ready Spring Boot 3.2 / Java 17 code including:
+1. Controller interface with all endpoints, correct annotations (@GetMapping, @PostMapping, etc.)
+2. Request DTO classes with Bean Validation annotations (@NotNull, @Size, @Email etc.)
+3. Response DTO classes with Lombok (@Data, @Builder, @NoArgsConstructor)
+4. GlobalExceptionHandler for all error response types defined in the spec
+5. OpenAPI/Swagger config class (@OpenAPIDefinition)
+6. MapStruct mapper interface between entity and DTO
+
+Package structure: com.[company].[service-name]
+Java style: use Records for immutable DTOs where appropriate.
+Include @Schema annotations on all DTOs for Swagger documentation.</div>
+    </div>
+  </div>
+
+  <!-- LESSON 07 — VALIDATE -->
+  <div class="lesson" id="validate">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Validation</span>
+      <span class="lesson-num">07</span>
+    </div>
+    <h2>Validate & Lint Specs</h2>
+    <p class="lesson-sub">SpecKit validates your specs against best practices and checks that your implementation matches what the spec says.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-cmt"># Lint all specs (style + completeness checks)</span>
+<span class="tok-cmd">speckit</span> lint --all
+
+<span class="tok-cmt"># Validate implementation matches spec (contract testing)</span>
+<span class="tok-cmd">speckit</span> contract-test --service order-service --env local
+
+<span class="tok-cmt"># Check for breaking changes against previous version</span>
+<span class="tok-cmd">speckit</span> diff --service order-service --baseline main
+
+<span class="tok-cmt"># Check cross-service schema compatibility</span>
+<span class="tok-cmd">speckit</span> compat --consumer payment-service --provider order-service</pre></div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #7 — Review & Fix Spec Quality</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">Please review this OpenAPI spec and identify all quality issues:
+
+[PASTE YOUR openapi.yaml HERE]
+
+Check for:
+1. Missing or incomplete descriptions on paths, parameters, and schemas
+2. Missing error responses (400, 401, 403, 404, 422, 500) on each endpoint
+3. Inconsistent naming conventions (camelCase vs snake_case in schemas)
+4. Missing required field markers on request schemas
+5. Endpoints that should have pagination but don't
+6. Security definitions missing on endpoints that need auth
+7. Missing examples in request/response schemas
+8. Duplicate schema definitions that should use $ref
+
+For each issue found:
+- Quote the exact problematic section
+- Explain why it's a problem
+- Provide the corrected YAML
+
+Output the full corrected spec at the end.</div>
+    </div>
+  </div>
+
+  <!-- LESSON 08 — PROMPT LIBRARY -->
+  <div class="lesson" id="prompts">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Prompt Library</span>
+      <span class="lesson-num">08</span>
+    </div>
+    <h2>Reusable Prompt Library</h2>
+    <p class="lesson-sub">A curated set of prompts covering every stage of the SpecKit workflow. Copy, fill in the brackets, and use with Claude or any AI assistant.</p>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #8 — Onboard a New Service into SpecKit</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I need to onboard an existing microservice into SpecKit. The service has no spec file yet.
+
+Service details:
+- Name: [service-name]
+- Language/framework: [e.g. Spring Boot 3.2 / Java 17]
+- What it does: [brief description]
+- Main controller file: [paste controller code OR describe endpoints]
+
+Please:
+1. Generate a complete OpenAPI 3.0 spec by reverse-engineering the controller
+2. Write the speckit.config.json entry for this service
+3. Give me the speckit register and context build commands to run
+4. Identify anything missing from the controller that should be in the spec
+5. List 3 linting improvements I should make before merging the spec</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #9 — Detect Breaking Changes Before Merge</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I am about to merge changes to the [service-name] OpenAPI spec. Compare these two versions and identify all breaking changes.
+
+CURRENT spec (main branch):
+[PASTE CURRENT openapi.yaml]
+
+PROPOSED spec (feature branch):
+[PASTE NEW openapi.yaml]
+
+For each breaking change:
+1. Describe exactly what changed
+2. Identify which consumer services would be affected (based on this consumer list: [list consumers])
+3. Rate the severity: Critical / Major / Minor
+4. Suggest a migration strategy (versioning, deprecation headers, parallel endpoints)
+
+Also list all non-breaking improvements in the proposed spec.</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Prompt #10 — Map Business Requirements to Spec Changes</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I have a new business requirement and need to update my microservice spec.
+
+Current spec:
+[PASTE openapi.yaml]
+
+New requirement:
+[Describe the business requirement in plain English, e.g. "Customers must be able to schedule orders for future delivery — up to 7 days ahead. The order API must accept an optional scheduledDeliveryDate field. Orders scheduled more than 48h ahead get a 5% discount applied automatically."]
+
+Please:
+1. Identify which existing endpoints need changes
+2. Identify if any new endpoints are needed
+3. Show the exact YAML diff to implement this requirement
+4. List any new validation rules to add
+5. Flag any downstream services that will need to be updated
+6. Write an ADR (Architecture Decision Record) snippet for this change</div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+  <div class="phase-divider">
+    <span class="pd-num">PHASE 03</span>
+    <span class="pd-title">Custom Agent Workflows</span>
+    <span class="pd-desc">Role-specific AI workflows for your entire team</span>
+  </div>
+  <div class="content">
+
+  <!-- AGENT — DEVELOPER -->
+  <div class="lesson" id="agent-dev">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Agent Workflow</span>
+      <span class="lesson-num">DEV</span>
+    </div>
+    <h2>Developer Agent 🧑‍💻</h2>
+    <p class="lesson-sub">The Developer Agent helps engineers work faster with specs — generating boilerplate, reviewing PRs against contracts, and diagnosing integration failures.</p>
+
+    <div class="agent-card agent-dev">
+      <div class="agent-header">
+        <div class="agent-avatar">🧑‍💻</div>
+        <div class="agent-info">
+          <h3>Developer Agent</h3>
+          <p>Code generation · PR review · Integration debugging · Contract testing</p>
+        </div>
+      </div>
+      <div class="agent-body">
+        <div class="agent-section-title">Daily Activities</div>
+        <div class="agent-tasks">
+          <div class="agent-task">Generate controller, DTO, and mapper code from spec before writing any implementation</div>
+          <div class="agent-task">Run contract tests against a running local service before raising a PR</div>
+          <div class="agent-task">Check if your proposed endpoint change would break any known consumers</div>
+          <div class="agent-task">Ask the context engine what another service's API looks like before integrating with it</div>
+          <div class="agent-task">Generate WireMock stubs from spec to unblock your feature branch locally</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Dev Prompt #1 — Start a New Feature from Spec</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I am a developer starting work on a new feature. I have been given the following spec change:
+
+[PASTE the relevant section of openapi.yaml OR describe the new endpoint]
+
+My service uses:
+- Spring Boot 3.2 / Java 17
+- JPA + PostgreSQL
+- MapStruct for mapping
+- JUnit 5 + Mockito for testing
+
+Please generate:
+1. The Controller interface method with correct annotations
+2. The Request DTO with Bean Validation
+3. The Response DTO with Lombok and @Schema
+4. The Service interface method signature
+5. The Repository method I'll need (Spring Data JPA)
+6. A unit test skeleton for the service method (happy path + 2 error cases)
+7. A WireMock stub file for this endpoint so my team can mock it
+
+Follow the existing package structure: com.[company].[service]</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Dev Prompt #2 — Debug a Contract Mismatch</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">My speckit contract-test command is failing with the following output:
+
+[PASTE speckit contract-test output]
+
+The spec says:
+[PASTE relevant spec section]
+
+My actual implementation:
+[PASTE relevant controller/DTO code]
+
+Help me:
+1. Identify exactly what is different between the spec and implementation
+2. Decide whether to fix the implementation to match the spec OR update the spec (and why)
+3. Show the exact code change needed
+4. Confirm there are no other endpoints with the same mismatch pattern in my codebase</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Dev Prompt #3 — Review My PR Against the Spec</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">Please review my pull request against the service spec.
+
+The spec (openapi.yaml):
+[PASTE spec]
+
+My changed files:
+[PASTE controller diff OR full controller code]
+[PASTE DTO diff OR full DTO code]
+
+Review for:
+1. Does the implementation correctly match every endpoint in the spec?
+2. Are all required fields in the spec validated in the DTO?
+3. Are all error responses from the spec handled by the GlobalExceptionHandler?
+4. Is the response structure exactly what the spec defines?
+5. Any spec-violating shortcuts or hardcoded values?
+
+Give me a checklist: ✅ pass / ❌ fail / ⚠️ warning for each point.</div>
+    </div>
+  </div>
+
+  <!-- AGENT — QA -->
+  <div class="lesson" id="agent-qa">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Agent Workflow</span>
+      <span class="lesson-num">QA</span>
+    </div>
+    <h2>QA Agent 🧪</h2>
+    <p class="lesson-sub">The QA Agent generates test cases directly from specs — no more waiting for development to finish before writing tests.</p>
+
+    <div class="agent-card agent-qa">
+      <div class="agent-header">
+        <div class="agent-avatar">🧪</div>
+        <div class="agent-info">
+          <h3>QA Agent</h3>
+          <p>Test case generation · Boundary analysis · Mock data · Regression detection</p>
+        </div>
+      </div>
+      <div class="agent-body">
+        <div class="agent-section-title">Daily Activities</div>
+        <div class="agent-tasks">
+          <div class="agent-task">Generate test cases from spec at design time, before a single line is coded</div>
+          <div class="agent-task">Auto-generate boundary value test data from schema constraints (minLength, maximum, pattern)</div>
+          <div class="agent-task">Create negative test scenarios from every defined error response (400, 422, etc.)</div>
+          <div class="agent-task">Detect when a spec change would require new regression tests</div>
+          <div class="agent-task">Generate Postman collections and RestAssured test code from spec</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">QA Prompt #1 — Generate Full Test Suite from Spec</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I am a QA engineer. Generate a comprehensive test suite for this API spec:
+
+[PASTE openapi.yaml]
+
+For EACH endpoint, generate:
+1. Happy path test case (valid input → expected 2xx response)
+2. Boundary value tests for every numeric/string field with constraints
+3. Required field missing tests (one per required field)
+4. Invalid format tests (wrong types, malformed values)
+5. Business rule violation tests (422 error cases)
+6. Auth failure test (401/403 where applicable)
+
+Format: RestAssured + JUnit 5 test class, fully compilable.
+Include @BeforeEach for test setup and WireMock for external service dependencies.
+Test class name: [ServiceName]ApiIntegrationTest
+Package: com.[company].[service].api</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">QA Prompt #2 — Generate Realistic Test Data</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">Generate realistic test data for this spec schema:
+
+[PASTE the components/schemas section of openapi.yaml]
+
+I need:
+1. 5 valid request payloads (realistic business data, not "foo/bar/123")
+2. 1 payload for each boundary condition (min values, max values, exact length limits)
+3. 1 payload for each required-field-missing scenario
+4. 1 payload for each format violation (bad email, bad date, negative number where positive required)
+5. Edge cases: empty strings, special characters, unicode, very long strings
+
+Output format: JSON, one per code block, with a comment explaining what each tests.
+Service domain: [e.g. e-commerce orders / banking payments / HR records]</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">QA Prompt #3 — Regression Impact of Spec Change</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">The following spec change is about to be deployed. Identify which existing test cases need to be updated.
+
+Old spec section:
+[PASTE old YAML]
+
+New spec section:
+[PASTE new YAML]
+
+My existing test class:
+[PASTE existing test code]
+
+Tell me:
+1. Which existing tests will break due to this change?
+2. Which tests need to be updated (and how)?
+3. What new test cases must be added that don't exist yet?
+4. Are there any edge cases in the change that have no test coverage?
+
+Output a TODO list for my QA sprint.</div>
+    </div>
+  </div>
+
+  <!-- AGENT — ABA -->
+  <div class="lesson" id="agent-aba">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Agent Workflow</span>
+      <span class="lesson-num">ABA</span>
+    </div>
+    <h2>ABA Agent 📋</h2>
+    <p class="lesson-sub">The Application Business Analyst Agent bridges the gap between business requirements and technical specifications — no more translation loss.</p>
+
+    <div class="agent-card agent-aba">
+      <div class="agent-header">
+        <div class="agent-avatar">📋</div>
+        <div class="agent-info">
+          <h3>ABA Agent</h3>
+          <p>Requirements → Specs · User stories to API contracts · Acceptance criteria · Change impact</p>
+        </div>
+      </div>
+      <div class="agent-body">
+        <div class="agent-section-title">Daily Activities</div>
+        <div class="agent-tasks">
+          <div class="agent-task">Translate user stories and acceptance criteria directly into spec changes</div>
+          <div class="agent-task">Ask the context engine business questions — "does our API support X?" — in plain English</div>
+          <div class="agent-task">Verify a spec change covers all acceptance criteria before sign-off</div>
+          <div class="agent-task">Identify which user journeys are affected when a spec changes</div>
+          <div class="agent-task">Create business-readable summaries of what each API endpoint does</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">ABA Prompt #1 — User Story to Spec Change</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I am a Business Analyst. Convert this user story into a concrete API spec change.
+
+User Story:
+[PASTE USER STORY, e.g.:]
+"As a customer, I want to be able to save multiple delivery addresses to my account so that I can quickly select one at checkout without re-entering my details each time. I should be able to set one address as default. I should not be able to save more than 5 addresses."
+
+Current spec for the relevant service:
+[PASTE relevant sections of openapi.yaml]
+
+Please:
+1. Identify which existing endpoints need to change and how
+2. Identify any new endpoints needed
+3. Write the exact YAML changes required
+4. List all validation rules implied by the story
+5. Write the acceptance criteria as a checklist that maps to specific spec fields
+6. Flag any ambiguities in the story that need clarification before development starts</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">ABA Prompt #2 — Verify Spec Covers Acceptance Criteria</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I need to sign off on a spec change before it goes to development. Check that the spec covers all acceptance criteria.
+
+Acceptance criteria:
+[LIST YOUR ACCEPTANCE CRITERIA, e.g.:]
+- AC1: Customer can add up to 5 delivery addresses
+- AC2: One address can be marked as default
+- AC3: Attempting to add a 6th address returns a clear error message
+- AC4: Default address is automatically selected at checkout
+- AC5: Deleting the default address prompts for a new default
+
+Proposed spec change:
+[PASTE new/modified openapi.yaml sections]
+
+For each AC:
+- ✅ Covered — explain where in the spec
+- ❌ Not covered — explain what is missing and what spec change is needed
+- ⚠️ Partially covered — explain the gap
+
+Provide a go/no-go recommendation for development sign-off.</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">ABA Prompt #3 — Business Impact of a Spec Change</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">A developer has proposed this spec change. Explain the business impact in plain English.
+
+Proposed spec diff:
+[PASTE the git diff of openapi.yaml]
+
+Please explain:
+1. What business capability is this change adding, changing, or removing?
+2. Which user journeys are affected?
+3. Are any existing integrations (mobile app, third-party partners, internal systems) impacted?
+4. Is there any data migration needed?
+5. Are there any regulatory or compliance implications?
+6. Write a business-readable change summary suitable for a release note
+
+My domain is: [e.g. e-commerce / banking / healthcare / logistics]</div>
+    </div>
+  </div>
+
+  <!-- AGENT — ARCHITECT -->
+  <div class="lesson" id="agent-arch">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Agent Workflow</span>
+      <span class="lesson-num">ARCH</span>
+    </div>
+    <h2>Architect Agent 🏛️</h2>
+    <p class="lesson-sub">The Architect Agent maintains a live, queryable view of the entire system — dependency graphs, ADRs, evolution tracking, and cross-service impact analysis.</p>
+
+    <div class="agent-card agent-arch">
+      <div class="agent-header">
+        <div class="agent-avatar">🏛️</div>
+        <div class="agent-info">
+          <h3>Architect Agent</h3>
+          <p>System topology · Dependency analysis · ADR generation · Capacity & evolution planning</p>
+        </div>
+      </div>
+      <div class="agent-body">
+        <div class="agent-section-title">Daily Activities</div>
+        <div class="agent-tasks">
+          <div class="agent-task">Generate up-to-date service dependency graphs from the live context</div>
+          <div class="agent-task">Assess the cross-system impact of any spec change before it is approved</div>
+          <div class="agent-task">Auto-draft Architecture Decision Records (ADRs) for significant spec changes</div>
+          <div class="agent-task">Identify services with no spec, outdated specs, or spec/implementation drift</div>
+          <div class="agent-task">Plan API versioning strategies when breaking changes are unavoidable</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Arch Prompt #1 — Generate System Dependency Map</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I am a Solutions Architect. Generate a complete service dependency map from these specs.
+
+[FOR EACH SERVICE, PASTE:]
+Service: order-service
+Spec: [paste openapi.yaml]
+---
+Service: payment-service
+Spec: [paste openapi.yaml]
+---
+Service: notification-service
+Spec: [paste asyncapi.yaml]
+
+From these specs, please:
+1. Draw a Mermaid diagram showing all service-to-service dependencies (REST calls and events)
+2. Identify the critical path — which service failures would cascade?
+3. Identify any circular dependencies
+4. List services with no consumers (potential dead code)
+5. Identify the most coupled service (highest fan-in) and suggest decoupling options
+6. Flag any synchronous chains longer than 2 hops that should be made async</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Arch Prompt #2 — Draft an Architecture Decision Record</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">Draft an Architecture Decision Record (ADR) for the following spec change.
+
+The change:
+[Describe the architectural change, e.g. "We are splitting the order-service into order-service and order-history-service. The new order-history-service will own all GET /orders endpoints and take an event-driven feed from order-service."]
+
+Affected specs:
+[PASTE relevant spec sections]
+
+Write the ADR in the MADR format (Markdown Architecture Decision Records):
+- Title
+- Status: Proposed
+- Context (why this decision is needed)
+- Decision (what we decided)
+- Consequences (positive and negative)
+- Alternatives considered (at least 2, with reasons for rejection)
+- Affected services and teams
+
+Our system context: [brief description of the overall system]</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Arch Prompt #3 — API Versioning Strategy</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">I need to make a breaking change to a widely-used service API. Help me design a safe versioning strategy.
+
+Service: [service-name]
+Current spec version: [e.g. v1.2.0]
+Breaking change: [describe what is changing, e.g. "renaming customerId to userId across all endpoints and making it a UUID instead of integer"]
+Known consumers: [list consumer services and approximate traffic volumes]
+Timeline constraint: [e.g. must complete migration within 3 months]
+
+Please:
+1. Recommend a versioning approach (URL versioning / header versioning / query param)
+2. Show the exact spec changes for v1 (deprecated) and v2 (new) side by side
+3. Design a deprecation notice strategy (headers, spec annotations)
+4. Write a migration guide for consumer teams
+5. Define the deprecation timeline with milestones
+6. Show how to run v1 and v2 in parallel in a Spring Boot app</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-icon">🤖</span>
+        <span class="prompt-title">Arch Prompt #4 — Microservices Health Audit</span>
+        <button class="prompt-copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+      </div>
+      <div class="prompt-text">Perform a health audit of our microservices spec portfolio.
+
+SpecKit context export:
+[PASTE output of: speckit context export --format markdown]
+
+Evaluate each service across these dimensions (score 1-5):
+1. Spec completeness (all endpoints, schemas, errors documented)
+2. Spec accuracy (last validated against implementation)
+3. Consumer clarity (are all consumers identified?)
+4. Versioning hygiene (clear version, changelog, deprecation notices)
+5. Security coverage (auth defined on all protected endpoints)
+
+Output:
+- Score table for all services
+- Top 3 services most urgently needing spec improvement
+- Common patterns of spec debt across the portfolio
+- A prioritised improvement roadmap for the next sprint</div>
+    </div>
+  </div>
+
+  <!-- CHEATSHEET -->
+  <div class="lesson" id="cheatsheet">
+    <div class="lesson-eyebrow">
+      <span class="lesson-phase">Reference</span>
+      <span class="lesson-num">⚡</span>
+    </div>
+    <h2>SpecKit Commands Cheatsheet</h2>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">All Commands</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body"><pre><span class="tok-cmt"># ── INSTALL ──────────────────────────────────────</span>
+<span class="tok-cmd">npm</span> install -g @speckit/cli           <span class="tok-cmt"># Install CLI</span>
+<span class="tok-cmd">speckit</span> --version                     <span class="tok-cmt"># Check version</span>
+
+<span class="tok-cmt"># ── SETUP ────────────────────────────────────────</span>
+<span class="tok-cmd">speckit</span> init                          <span class="tok-cmt"># Interactive project setup</span>
+<span class="tok-cmd">speckit</span> register --all                <span class="tok-cmt"># Register all services</span>
+<span class="tok-cmd">speckit</span> config set ai.apiKey KEY      <span class="tok-cmt"># Set AI key</span>
+
+<span class="tok-cmt"># ── CONTEXT ──────────────────────────────────────</span>
+<span class="tok-cmd">speckit</span> context build --all          <span class="tok-cmt"># Build full context</span>
+<span class="tok-cmd">speckit</span> context build -s order-svc   <span class="tok-cmt"># Build one service</span>
+<span class="tok-cmd">speckit</span> context watch                 <span class="tok-cmt"># Auto-rebuild on change</span>
+<span class="tok-cmd">speckit</span> context export --format md   <span class="tok-cmt"># Export as markdown</span>
+<span class="tok-cmd">speckit</span> ask "your question"           <span class="tok-cmt"># Query context in English</span>
+
+<span class="tok-cmt"># ── VALIDATE ─────────────────────────────────────</span>
+<span class="tok-cmd">speckit</span> validate --all               <span class="tok-cmt"># Validate all specs</span>
+<span class="tok-cmd">speckit</span> lint --all                    <span class="tok-cmt"># Lint for best practices</span>
+<span class="tok-cmd">speckit</span> diff -s svc --baseline main  <span class="tok-cmt"># Detect breaking changes</span>
+<span class="tok-cmd">speckit</span> compat --consumer A --provider B  <span class="tok-cmt"># Cross-service compat</span>
+
+<span class="tok-cmt"># ── GENERATE ─────────────────────────────────────</span>
+<span class="tok-cmd">speckit</span> generate -s svc --target spring-boot   <span class="tok-cmt"># Spring controllers</span>
+<span class="tok-cmd">speckit</span> generate -s svc --type dto             <span class="tok-cmt"># DTO classes</span>
+<span class="tok-cmd">speckit</span> generate -s svc --type mock            <span class="tok-cmt"># WireMock stubs</span>
+<span class="tok-cmd">speckit</span> generate -s svc --type postman         <span class="tok-cmt"># Postman collection</span>
+<span class="tok-cmd">speckit</span> generate -s svc --type tests           <span class="tok-cmt"># Test skeletons</span>
+
+<span class="tok-cmt"># ── CONTRACT TESTING ─────────────────────────────</span>
+<span class="tok-cmd">speckit</span> contract-test -s svc --env local       <span class="tok-cmt"># Test vs running svc</span>
+<span class="tok-cmd">speckit</span> contract-test --all --env ci           <span class="tok-cmt"># Run in CI</span>
+
+<span class="tok-cmt"># ── SERVICES ─────────────────────────────────────</span>
+<span class="tok-cmd">speckit</span> services list                  <span class="tok-cmt"># List all registered services</span>
+<span class="tok-cmd">speckit</span> services status               <span class="tok-cmt"># Health of each service spec</span></pre></div>
+    </div>
+
+    <h3>Prompt Quick-Reference by Role</h3>
+    <table class="spec-table">
+      <thead><tr><th>Role</th><th>Task</th><th>Prompt #</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag-pill tag-all">All</span></td><td>Install SpecKit</td><td>#1</td></tr>
+        <tr><td><span class="tag-pill tag-all">All</span></td><td>Setup for microservices project</td><td>#2</td></tr>
+        <tr><td><span class="tag-pill tag-all">All</span></td><td>Create context from source specs</td><td>#3</td></tr>
+        <tr><td><span class="tag-pill tag-all">All</span></td><td>Validate context completeness</td><td>#4</td></tr>
+        <tr><td><span class="tag-pill tag-arch">Arch</span> <span class="tag-pill tag-dev">Dev</span></td><td>Generate OpenAPI spec from requirements</td><td>#5</td></tr>
+        <tr><td><span class="tag-pill tag-dev">Dev</span></td><td>Generate Spring Boot code from spec</td><td>#6</td></tr>
+        <tr><td><span class="tag-pill tag-dev">Dev</span> <span class="tag-pill tag-qa">QA</span></td><td>Review & fix spec quality</td><td>#7</td></tr>
+        <tr><td><span class="tag-pill tag-all">All</span></td><td>Onboard existing service</td><td>#8</td></tr>
+        <tr><td><span class="tag-pill tag-arch">Arch</span></td><td>Detect breaking changes</td><td>#9</td></tr>
+        <tr><td><span class="tag-pill tag-aba">ABA</span></td><td>Map business requirements to spec</td><td>#10</td></tr>
+        <tr><td><span class="tag-pill tag-dev">Dev</span></td><td>Start a new feature from spec</td><td>Dev #1</td></tr>
+        <tr><td><span class="tag-pill tag-dev">Dev</span></td><td>Debug a contract mismatch</td><td>Dev #2</td></tr>
+        <tr><td><span class="tag-pill tag-dev">Dev</span></td><td>Review PR against spec</td><td>Dev #3</td></tr>
+        <tr><td><span class="tag-pill tag-qa">QA</span></td><td>Generate full test suite from spec</td><td>QA #1</td></tr>
+        <tr><td><span class="tag-pill tag-qa">QA</span></td><td>Generate realistic test data</td><td>QA #2</td></tr>
+        <tr><td><span class="tag-pill tag-qa">QA</span></td><td>Regression impact of spec change</td><td>QA #3</td></tr>
+        <tr><td><span class="tag-pill tag-aba">ABA</span></td><td>User story to spec change</td><td>ABA #1</td></tr>
+        <tr><td><span class="tag-pill tag-aba">ABA</span></td><td>Verify spec covers acceptance criteria</td><td>ABA #2</td></tr>
+        <tr><td><span class="tag-pill tag-aba">ABA</span></td><td>Business impact of spec change</td><td>ABA #3</td></tr>
+        <tr><td><span class="tag-pill tag-arch">Arch</span></td><td>Generate system dependency map</td><td>Arch #1</td></tr>
+        <tr><td><span class="tag-pill tag-arch">Arch</span></td><td>Draft Architecture Decision Record</td><td>Arch #2</td></tr>
+        <tr><td><span class="tag-pill tag-arch">Arch</span></td><td>API versioning strategy</td><td>Arch #3</td></tr>
+        <tr><td><span class="tag-pill tag-arch">Arch</span></td><td>Microservices health audit</td><td>Arch #4</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// Sidebar active link on scroll
+const sections = document.querySelectorAll('.lesson[id], .phase-divider[id]');
+const navLinks = document.querySelectorAll('.nav-item, .nav-agent');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if(window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if(a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+}, {passive:true});
+
+// Copy code
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+
+// Copy prompt
+function copyPrompt(btn) {
+  const text = btn.closest('.prompt-box').querySelector('.prompt-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy Prompt', 1800);
+  });
+}
+
+// Close sidebar on mobile link click
+document.querySelectorAll('.nav-item, .nav-agent').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
+</script>
+
+</body>
+</html>
