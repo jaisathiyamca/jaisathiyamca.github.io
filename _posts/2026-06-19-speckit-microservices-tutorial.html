@@ -293,6 +293,7 @@ code{font-family:'JetBrains Mono',monospace;background:#1E2535;color:#C084FC;pad
     <a href="#scan-be" class="sb-link"><span class="sb-num">04</span>Scan Backend Services</a>
     <a href="#build-ctx" class="sb-link"><span class="sb-num">05</span>Build Unified Context</a>
     <a href="#verify-ctx" class="sb-link"><span class="sb-num">06</span>Verify & Query Context</a>
+    <a href="#feature-inventory" class="sb-link"><span class="sb-num">07</span>Feature Inventory ★</a>
   </div>
   <div class="sb-section">
     <div class="sb-label">Role Workflows</div>
@@ -863,6 +864,66 @@ Ready? Start with: [PASTE FIRST SERVICE CODE]</div>
   </div>
 </div>
 
+<!-- LESSON 07 — FEATURE INVENTORY -->
+<div class="lesson" id="feature-inventory">
+  <div class="lesson-tag"><span class="l-phase">Context Creation</span><span class="l-num">07</span></div>
+  <h2>Auto-Generate a Feature Inventory from the Context</h2>
+  <p class="lesson-sub">Instead of typing feature names into every prompt, run this once after your context is built. It produces a reusable Feature Inventory — a numbered list of every capability with its owning service and source files. All subsequent ABA, QA, Dev, and Architect prompts reference this list by feature number.</p>
+
+  <div class="callout co-tip">
+    <span class="callout-icon">💡</span>
+    <div class="callout-text"><strong>Why this matters:</strong> The context knows which source files implement each feature. The Feature Inventory surfaces those file references so every role gets file-level precision — not just service names — in every downstream prompt.</div>
+  </div>
+
+  <div class="cb">
+    <div class="cb-head"><span class="cb-lang">bash — Generate Feature Inventory</span><button class="cb-copy" onclick="copyCode(this)">Copy</button></div>
+    <div class="cb-body"><pre><span class="cmt"># Export the context then ask Claude to extract all features with file references</span>
+<span class="cmd">speckit</span> context export <span class="t-flag">--format markdown</span> > context.md
+
+<span class="cmt"># Or use the speckit ask command directly:</span>
+<span class="cmd">speckit</span> ask <span class="str">"List all user-facing features. For each: feature number, name, owning service, and the source files that implement it."</span></pre></div>
+  </div>
+
+  <div class="prompt-box">
+    <div class="pb-head">
+      <span class="pb-icon">🤖</span>
+      <span class="pb-title">Prompt — Build Feature Inventory with File References</span>
+      <span class="pb-role tag tag-all">All Roles</span>
+      <button class="pb-copy" onclick="copyPrompt(this)">Copy</button>
+    </div>
+    <div class="pb-body">
+      <div class="pb-text">SYSTEM CONTEXT:
+[PASTE your speckit context export — run: speckit context export --format markdown]
+
+You have just ingested the full context of my microservices system.
+Please produce a FEATURE INVENTORY in the following format:
+
+## Feature Inventory
+
+For every distinct user-facing feature or capability you detected, produce one row:
+
+| # | Feature Name | Owning Service | Key Source Files | Related Endpoints |
+|---|---|---|---|---|
+| F-01 | [feature name] | [service-name] | [Controller.java, Service.java, Repository.java] | [GET /path, POST /path] |
+| F-02 | ... | ... | ... | ... |
+
+Rules:
+- Include EVERY feature — even small ones like "view order history", "update profile", "reset password"
+- For "Key Source Files" list the actual file names (not package paths), e.g. OrderController.java, not com.example.order.OrderController
+- Separate frontend features and backend features into two sections
+- At the bottom, add a CROSS-SERVICE FEATURE section for features that span multiple services (e.g. checkout triggers payment AND inventory)
+- Number features F-01, F-02... across both sections (continuous numbering)
+
+I will use this inventory in all my subsequent prompts so I can say "analyse impact of changing F-07" instead of re-describing the feature each time.</div>
+    </div>
+  </div>
+
+  <div class="callout co-tip" style="margin-top:24px;">
+    <span class="callout-icon">📌</span>
+    <div class="callout-text"><strong>How to use the inventory:</strong> Save the output as <code>feature-inventory.md</code> in your project root. In every ABA/QA/Dev/Arch prompt below, instead of describing the feature again, paste the relevant rows from this table. For example: "Analyse the impact of changing <strong>F-07 (Scheduled Delivery)</strong> — see inventory row: order-service | OrderController.java, ScheduleService.java, OrderRepository.java | POST /orders/schedule"</div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════ -->
 <div class="phase"><span class="ph-num">PHASE 02</span><span class="ph-title">ABA Workflow</span><span class="ph-sub">Business Analysis powered by system context</span></div>
 
@@ -938,15 +999,28 @@ Please produce:
 
 2. ACCEPTANCE CRITERIA (Given/When/Then format, minimum 5)
 
-3. IMPACT ANALYSIS — for each service in the system:
+3. IMPACT ANALYSIS — for each service in the system, provide TWO levels:
+
+   SERVICE LEVEL (which services are touched):
    - [FRONTEND_SERVICE]: What UI changes are needed?
    - [BE1_NAME]: What backend changes are needed?
    - [BE2_NAME]: What backend changes are needed?
    - [BE3_NAME]: What backend changes are needed?
    - [BE4_NAME]: What backend changes are needed?
 
+   FILE LEVEL (which source files change — use the Feature Inventory if provided, or infer from context):
+   For each affected service, list the specific files:
+   - [SERVICE] → [FileName.java] → [New file / Modify existing / Add method]
+   Example format:
+   - order-service → OrderController.java (add POST /orders/schedule endpoint)
+   - order-service → ScheduleService.java (NEW — business logic for scheduled delivery)
+   - order-service → OrderRepository.java (add findByScheduledDate query)
+   - order-service → V4__add_scheduled_at_column.sql (NEW migration)
+   - customer-portal → OrderForm.tsx (add date picker component)
+
 4. NEW DATA FIELDS REQUIRED
-   (name fields using the same naming convention found in the context)
+   (name fields using the same naming convention found in the context;
+   for each field also state: which table/entity, nullable or required, validation rules)
 
 5. BUSINESS RULES (numbered list)
 
@@ -1088,9 +1162,22 @@ USER STORY FROM ABA:
 
 Please produce:
 
-PART 1 — IMPACT MAP
-Which services, endpoints, and UI areas does this story touch?
-For each: [SERVICE] → [ENDPOINT or COMPONENT] → [Type of change: New / Modified / Regression risk]
+PART 1 — IMPACT MAP (two levels)
+
+SERVICE + ENDPOINT LEVEL:
+For each service: [SERVICE] → [ENDPOINT or COMPONENT] → [New / Modified / Regression risk]
+
+FILE LEVEL (required — use Feature Inventory rows if provided, else infer from context):
+List the exact source files being added or changed. Format:
+  [SERVICE] → [FileName] → [What changes in this file] → [Risk: High/Med/Low]
+Example:
+  order-service → OrderController.java → New POST /orders/schedule method → High
+  order-service → ScheduleService.java → New file, scheduling business logic → High
+  order-service → OrderRepository.java → New findByScheduledDate() method → Medium
+  customer-portal → OrderForm.tsx → Add date picker field → Medium
+  customer-portal → useOrderStore.ts → Add scheduledAt to order state → Low
+
+This file list becomes your test target list — every changed file needs at least one test case.
 
 PART 2 — TEST CASES
 For each acceptance criterion, write test cases covering:
