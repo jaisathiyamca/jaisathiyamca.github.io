@@ -1,43 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to My Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <title>{% if page.title %}{{ page.title }} | Sathiyaraj Venkatachalapathy{% else %}Sathiyaraj Venkatachalapathy | Lead Java Developer{% endif %}</title>
+    <meta name="description" content="Lead Java Developer with 12+ years at Renault Nissan, Infosys & CAMS. Spring Boot, GCP, Kubernetes, Angular. Open to roles in Europe, Singapore & Malaysia.">
+    <meta name="author" content="Sathiyaraj Venkatachalapathy">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --navy:   #0F172A;
+            --slate:  #1E293B;
+            --muted:  #64748B;
+            --light:  #F8FAFC;
+            --border: #E2E8F0;
+            --accent: #6366F1;
+            --accent2:#8B5CF6;
+            --green:  #10B981;
+            --white:  #FFFFFF;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--navy); line-height: 1.7; }
+        a { text-decoration: none; color: inherit; }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 60px;
+        }
+        .nav-logo { font-weight: 700; font-size: 1rem; color: var(--navy); letter-spacing: -0.3px; }
+        .nav-logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 28px; }
+        .nav-links a { font-size: 0.82rem; font-weight: 500; color: var(--muted); transition: color .2s; }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-cta {
+            background: var(--accent); color: white;
+            padding: 8px 18px; border-radius: 8px;
+            font-size: 0.82rem; font-weight: 600;
+            transition: background .2s;
+        }
+        .nav-cta:hover { background: var(--accent2); }
+
+        /* PAGE CONTENT */
+        .page-wrap {
+            max-width: 860px; margin: 0 auto;
+            padding: 48px 40px 80px;
+        }
+        .page-wrap h1 { font-size: 2rem; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 8px; }
+        .page-wrap h2 { font-size: 1.3rem; font-weight: 700; color: var(--navy); margin: 36px 0 10px; }
+        .page-wrap h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin: 24px 0 8px; }
+        .page-wrap h4 { font-size: 0.9rem; font-weight: 700; color: var(--muted); margin: 16px 0 6px; }
+        .page-wrap p { font-size: 0.93rem; color: #334155; margin-bottom: 14px; }
+        .page-wrap ul, .page-wrap ol { padding-left: 20px; margin-bottom: 14px; }
+        .page-wrap li { font-size: 0.9rem; color: #334155; margin-bottom: 5px; }
+        .page-wrap strong { color: var(--navy); }
+        .page-wrap a { color: var(--accent); }
+        .page-wrap a:hover { text-decoration: underline; }
+        .page-wrap hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+        .page-wrap blockquote {
+            border-left: 3px solid var(--accent);
+            padding: 12px 20px; background: #EEF2FF;
+            border-radius: 0 8px 8px 0; margin: 16px 0;
+            font-style: italic; color: #475569;
+        }
+        code {
+            background: #F1F5F9; color: #7C3AED;
+            padding: 2px 6px; border-radius: 4px;
+            font-size: 0.85em; font-family: monospace;
+        }
+        pre { background: var(--navy); color: #E2E8F0; padding: 20px; border-radius: 10px; overflow-x: auto; margin: 16px 0; }
+        pre code { background: none; color: inherit; padding: 0; }
+
+        /* Blog list styles */
+        .blog-post-card {
+            background: white; border: 1px solid var(--border);
+            border-radius: 14px; padding: 22px; margin-bottom: 16px;
+            transition: box-shadow .2s, transform .2s;
+        }
+        .blog-post-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+        .blog-post-card .date { font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+        .blog-post-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+        .blog-post-card h3 a { color: var(--navy); }
+        .blog-post-card h3 a:hover { color: var(--accent); text-decoration: none; }
+        .blog-post-card p { font-size: 0.83rem; color: var(--muted); margin-bottom: 10px; }
+        .blog-post-card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+        .blog-post-card .tag { background: #EEF2FF; color: var(--accent); font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+        .read-more { font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+        .blog-list { margin-top: 24px; }
+        .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .skill-category { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+        .skill-category h3 { font-size: 0.82rem; margin: 0 0 4px; color: var(--accent); }
+        .skill-category p { font-size: 0.75rem; color: var(--muted); margin: 0; }
+
+        /* FOOTER */
+        footer {
+            background: var(--navy); color: #94A3B8;
+            padding: 28px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.8rem;
+        }
+        footer .f-name { color: white; font-weight: 700; margin-bottom: 4px; }
+        .f-links { display: flex; gap: 20px; }
+        .f-links a { color: #94A3B8; transition: color .2s; }
+        .f-links a:hover { color: white; }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-links { display: none; }
+            .page-wrap { padding: 32px 20px 60px; }
+            footer { flex-direction: column; gap: 16px; }
+            .skills-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My World</h1>
-        <h2>Java Developer & Architect with 13 Years of Experience</h2>
-    </header>
-    <section id="about" class="animated fadeIn">
-        <h3>About Me</h3>
-        <p>I am passionate about technology and building innovative solutions that push the boundaries of what’s possible.</p>
-    </section>
-    <section id="skills" class="animated slideIn">
-        <h3>Skills</h3>
-        <ul>
-            <li>Java</li>
-            <li>Spring Framework</li>
-            <li>Microservices Architectures</li>
-            <li>Cloud Computing</li>
-            <li>Agile Methodologies</li>
-        </ul>
-    </section>
-    <section id="projects" class="animated bounceIn">
-        <h3>Projects</h3>
-        <p>Check out some of my significant projects:</p>
-        <ul>
-            <li><a href="#">Project A</a></li>
-            <li><a href="#">Project B</a></li>
-            <li><a href="#">Project C</a></li>
-        </ul>
-    </section>
-    <footer class="animated fadeInUp">
-        <h3>Contact Me</h3>
-        <p>Email: <a href="mailto:youremail@example.com">youremail@example.com</a></p>
-    </footer>
+
+<nav>
+    <a href="/" class="nav-logo">Sathiyaraj <span>V.</span></a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#experience">Experience</a>
+        <a href="/#skills">Skills</a>
+        <a href="/#projects">Projects</a>
+        <a href="/blog">Articles</a>
+        <a href="/about">About</a>
+    </div>
+    <a href="mailto:srisathiyamca@gmail.com" class="nav-cta">Hire Me</a>
+</nav>
+
+<div class="page-wrap">
+    {{ content }}
+</div>
+
+<footer>
+    <div>
+        <div class="f-name">Sathiyaraj Venkatachalapathy</div>
+        Lead Java Developer · Tamil Nadu, India · srisathiyamca@gmail.com
+    </div>
+    <div class="f-links">
+        <a href="https://www.linkedin.com/in/sathiyaraj-venkatachalapathy-706569188/" target="_blank">LinkedIn</a>
+        <a href="https://github.com/jaisathiyamca" target="_blank">GitHub</a>
+        <a href="/about">About</a>
+        <a href="/resume">Resume</a>
+    </div>
+</footer>
+
 </body>
 </html>

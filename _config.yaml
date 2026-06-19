@@ -1,26 +1,26 @@
 # Site Configuration
-title: Sathiyaraj
+title: Sathiyaraj Venkatachalapathy
 description: >
-  Senior Java Developer & Practicing Software Architect
-  | 13 Years of Experience
-  | Sharing Technical Insights & Daily Challenges
+  Lead Java Developer & Cloud-Native Engineer
+  | 12+ Years of Experience
+  | Spring Boot · GCP · Kubernetes · Angular
+  | Open to roles in Europe, Singapore & Malaysia
 baseurl: ""
 url: "https://jaisathiyamca.github.io"
 
 # Author Information
 author:
-  name: Sathiya
-  email: jaisathiyamca01@gmail.com
-  bio: "Senior Java Developer and Practicing Software Architect with 13 years of experience in designing and building scalable enterprise applications. Passionate about clean code, system design, and sharing knowledge through writing."
-  profile_image: /assets/images/profile.jpg
-  location: "Chennai"
+  name: Sathiyaraj Venkatachalapathy
+  email: srisathiyamca@gmail.com
+  bio: "Lead Java Developer with 12+ years of experience building enterprise systems at Renault Nissan, Infosys and CAMS. Expert in Spring Boot, GCP, Kubernetes, and Angular. Passionate about clean architecture, system design, and sharing knowledge through writing."
+  profile_image: /assets/images/profile.png
+  location: "Tamil Nadu, India"
 
 # Social Media Links
 social:
   github: jaisathiyamca
-  linkedin: your-linkedin-profile
-  twitter: your-twitter-handle
-  email: jaisathiyamca01@gmail.com
+  linkedin: sathiyaraj-venkatachalapathy-706569188
+  email: srisathiyamca@gmail.com
 
 # Build Settings
 markdown: kramdown
